@@ -1,0 +1,11 @@
+username,email,password,role,age,gender,birthday,bio,preferred_gender,picture1,picture2,picture3,is_verified
+abigail10,abigail10@example.com,Password123!,user,22,female,2004-04-09,"Into fitness, music, and trying new things.",female,,,,TRUE
+aiden7,aiden7@example.com,Password123!,user,28,male,1998-04-09,Looking for something real and fun.,female,,,,TRUE
+amelia7,amelia7@example.com,Password123!,user,25,female,2001-04-09,"Into fitness, music, and trying new things.",any,,,,FALSE
+aria19,aria19@example.com,Password123!,user,30,female,1996-04-09,Always down for a walk and a deep conversation.,male,,,,TRUE
+asher24,asher24@example.com,Password123!,user,23,male,2003-04-09,"Big on honesty, laughs, and late-night chats.",male,,,,FALSE
+aurora24,aurora24@example.com,Password123!,user,22,female,2004-04-09,"Beach days, playlists, and meaningful vibes.",male,,,,TRUE
+ava3,ava3@example.com,Password123!,user,25,female,2001-04-09,Book lover and weekend hiker.,any,,,,TRUE
+benjamin10,benjamin10@example.com,Password123!,user,31,male,1995-04-09,"Big on honesty, laughs, and late-night chats.",male,,,,FALSE
+caleb19,caleb19@example.com,Password123!,user,30,male,1996-04-09,"Big on honesty, laughs, and late-night chats.",male,,,,TRUE
+chloe14,chloe14@example.com,Password123!,user,30,female,1996-04-09,Book lover and weekend hiker.,any,,,,FALSE
