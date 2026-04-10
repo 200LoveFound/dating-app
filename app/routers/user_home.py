@@ -14,9 +14,28 @@ async def user_home_view(
     user: AuthDep,
     db:SessionDep
 ):
-    
+    #get user profile
     current_profile = db.exec(select(Profile).where(Profile.user_id == user.id)).first()
-    profiles = db.exec(select(Profile).where(Profile.gender == current_profile.preferred_gender)).all()
+    
+    # get ids of profiles already liked
+    liked_ids = db.exec(
+        select(Like.liked_id).where(Like.liker_id == current_profile.id)
+    ).all()
+
+    # get ids of profiles already disliked
+    disliked_ids = db.exec(
+        select(DisLike.disliked_id).where(DisLike.disliker_id == current_profile.id)
+    ).all()
+
+    # exclude already liked/disliked and own profile
+    excluded_ids = set(liked_ids) | set(disliked_ids) | {current_profile.id}
+
+    profiles = db.exec(
+        select(Profile).where(
+            Profile.gender == current_profile.preferred_gender,
+            Profile.id.not_in(list(excluded_ids))
+        )
+    ).all()
 
 
     return templates.TemplateResponse(
@@ -86,6 +105,7 @@ def liked_profiles(request: Request, user: AuthDep, db:SessionDep):
         name="liked.html",
         context={
             "user": user,
+            "mine" :mine,
             "profiles": liked
         }
 
@@ -106,6 +126,7 @@ def liked_by_profiles(request: Request, user: AuthDep, db:SessionDep):
         name="liked_by.html",
         context={
             "user": user,
+            "mine" :mine,
             "profiles": liked_by
         }
 

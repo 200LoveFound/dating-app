@@ -5,11 +5,12 @@
 
 /*Page mode is implemented here simply*/
 
-body{
-    /*if profile.gender == female*/
-    /*background: linear-gradient(135deg, #e67ed0, #fdfeff, #fcb0eb, #fdfeff ); */
-    /*elif profile.gender == male */
-    background: linear-gradient(135deg, #52a0ff, #fdfeff, hsl(213, 83%, 68%), #fdfeff );
+.theme-female {
+    background: linear-gradient(135deg, #e67ed0, #fdfeff, #fcb0eb, #fdfeff);
+}
+
+.theme-male {
+    background: linear-gradient(135deg, #52a0ff, #fdfeff, hsl(213, 83%, 68%), #fdfeff);
 }
 
 
@@ -129,6 +130,8 @@ body{
 
 {% block subpage_content %}
 
+<body class="{% if mine.gender == 'female' %}theme-female{% elif mine.gender == 'male' %}theme-male{% endif %}">
+
 <h3 class="mb-4">Profiles who liked you ♥</h3>
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
@@ -180,5 +183,6 @@ body{
 {% endif %}
 
 
+</body>
 
 {% endblock %}
