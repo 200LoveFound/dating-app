@@ -159,25 +159,26 @@ body{
 
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
-
+    {% for p in profiles %}
+    {% if p.picture1 %}
     <!--with a picture-->
 
     <div class="col">
         <div class="card profile-card" id="card ">
             <div class="profile-card-img">
-                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_xeNoq-RFf1bNb3y9FOxeTQCZMW1VMydKcA&s" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
+                 <img src="{{p.picture1}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
                
              </div>
             <div class="card-body">
                 <div class="d-flex align-items-baseline gap-2 mb-2">
-                     <span class="profile-name">Bob</span>
-                     <span class="profile-age text-muted">21</span>
+                     <span class="profile-name">{{p.username}}</span>
+                     <span class="profile-age text-muted">{{p.age}}</span>
                      <!--report button-->
                      <form method="POST" action="#" class="ms-auto">
                          <button type="submit" class="btn-report">⚑</button>
                      </form>
                 </div>
-                <p class="profile-bio text-muted">Loves hiking and bad puns. Looking for someone to go on adventures with.</p>
+                <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
                      <!--dislike and like-->
                     <form method="POST" action="#" class="flex-fill">
@@ -190,25 +191,26 @@ body{
             </div>
         </div>
     </div>
-
+    {% endif %}
+    {% if not p.picture1 %}
     <!--without a picture-->
 
      <div class="col">
         <div class="card profile-card" id="card" >
             <div class="profile-card-img bg-purple">
                 <!--take the username and work this logic : initials = username[0].upper() to display here-->
-                <div class="profile-initials">SC</div>
+                <div class="profile-initials">{{p.username[:2].upper()}}</div>
             </div>
             <div class="card-body">
                 <div class="d-flex align-items-baseline gap-2 mb-2">
-                    <span class="profile-name">Sarah C.</span>
-                    <span class="profile-age text-muted">24</span>
+                    <span class="profile-name">{{p.username}}</span>
+                    <span class="profile-age text-muted">{{p.age}}</span>
                     <!--Report button-->
                     <form method="POST" action="#" class="ms-auto">
                          <button type="submit" class="btn-report">⚑</button>
                      </form>
                 </div>
-                <p class="profile-bio text-muted">Loves hiking and bad puns. Looking for someone to go on adventures with.</p>
+                <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
                     <!--dislike and like-->
                     <form method="POST" action="#" class="flex-fill">
@@ -221,7 +223,8 @@ body{
             </div>
         </div>
     </div>
-
+    {% endif %}
+    {% endfor %}
     <!-- repeat for others -->
 
     <!--scroll to top button-->

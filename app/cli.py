@@ -6,7 +6,7 @@ from sqlmodel import *
 from app.database import create_db_and_tables, get_cli_session, drop_all
 from app.models.user import *
 from app.models.models import *
-# from app.auth import encrypt_password
+from app.utilities.security import encrypt_password, verify_password, create_access_token
 
 #populating the db with some profiles
 
@@ -23,7 +23,7 @@ def initialize():
             admin=User(
                 username="admin",
                 email="admin@mail.com",
-                password= "adminpass",
+                password= encrypt_password("adminpass"),
                 role="admin"
             )
             db.add(admin)
@@ -57,7 +57,8 @@ def initialize():
                     try:
                         username = (row.get("username") or "").strip()
                         email = (row.get("email") or "").strip()
-                        password = (row.get("password") or "").strip()
+                        passwordstr = (row.get("password") or "").strip()
+                        password = encrypt_password(passwordstr)
                         role = (row.get("role") or "regularuser").strip()
                         ageval = (row.get("age") or "").strip()
                         genderval = (row.get("gender") or "").strip()
