@@ -6,7 +6,7 @@ from app.dependencies.auth import AuthDep, IsUserLoggedIn, get_current_user, is_
 from . import router, templates
 from app.models.models import *
 from sqlmodel import *
-from typing import *
+from typing import Annotated
 from app.utilities.flash import *
 
 
@@ -82,7 +82,7 @@ def like_profile(request: Request, user: AuthDep, db:SessionDep, profileId: int)
     
 
     ##check if this user alr liked that profile
-    existing=db.exec(select(Like).where(Like.liker_id==mine.id, Like.liked_id==profileId)).first()
+    existing=db.exec(select(Like).where((Like.liker_id==mine.id) & (Like.liked_id==profileId))).first()
 
     if existing:
         return RedirectResponse(
@@ -97,14 +97,14 @@ def like_profile(request: Request, user: AuthDep, db:SessionDep, profileId: int)
 
 
     ##check if the profile you're liking alr liked you 
-    mutual=db.exec(select(Like).where(Like.liker_id==profileId, Like.liked_id==mine.id)).first()
+    mutual=db.exec(select(Like).where((Like.liker_id==profileId)&( Like.liked_id==mine.id))).first()
     if mutual:
 
         ##order it to prevent duplicates
         p1=min(mine.id, profileId)
         p2=max(mine.id, profileId)
         ##check if the mutual connection was alr made
-        exist=db.exec(select(Match).where(Match.profile1_id==p1, Match.profile2_id==p2)).first()
+        exist=db.exec(select(Match).where((Match.profile1_id==p1)& (Match.profile2_id==p2))).first()
 
         if not exist:
             match=Match(profile1_id=p1, profile2_id=p2)
@@ -195,7 +195,7 @@ def unlike_profile(request: Request, user: AuthDep, db: SessionDep, profileId: i
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
     
 
-    like=db.exec(select(Like).where(Like.liker_id==mine.id, Like.liked_id==profileId)).one_or_none()
+    like=db.exec(select(Like).where((Like.liker_id==mine.id) & (Like.liked_id==profileId))).one_or_none()
 
     if not like:
         return RedirectResponse(
@@ -209,7 +209,7 @@ def unlike_profile(request: Request, user: AuthDep, db: SessionDep, profileId: i
     ## delete a match if a match was created prev with the person you want to unlike
     p1=min(mine.id, profileId)
     p2=max(mine.id, profileId)
-    exist=db.exec(select(Match).where(Match.profile1_id==p1, Match.profile2_id==p2)).first()
+    exist=db.exec(select(Match).where((Match.profile1_id==p1) & (Match.profile2_id==p2))).first()
     if exist:
         db.delete(exist)
         db.commit()
