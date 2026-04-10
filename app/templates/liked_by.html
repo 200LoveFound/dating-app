@@ -1,20 +1,15 @@
 {% extends "authenticated-base.html" %}
 
-{% block external_js %}
-<script src="{{ url_for('static', path='js/app.js')}}"></script>
-{% endblock %}
-
 {% block additional_styles %}
 <style>
 
 /*Page mode is implemented here simply*/
 
-.theme-female {
-    background: linear-gradient(135deg, #e67ed0, #fdfeff, #fcb0eb, #fdfeff);
-}
-
-.theme-male {
-    background: linear-gradient(135deg, #52a0ff, #fdfeff, hsl(213, 83%, 68%), #fdfeff);
+body{
+    /*if profile.gender == female*/
+    /*background: linear-gradient(135deg, #e67ed0, #fdfeff, #fcb0eb, #fdfeff ); */
+    /*elif profile.gender == male */
+    background: linear-gradient(135deg, #52a0ff, #fdfeff, hsl(213, 83%, 68%), #fdfeff );
 }
 
 
@@ -132,46 +127,27 @@
 </style>
 {% endblock %}
 
-
 {% block subpage_content %}
 
-
-
-  <!--  <div class="container" id="content">
-        <div class="row">
-            <p>
-                This is table is rendered on the Client. JavaScript code requests the data from <a href="/api/users">/api/users</a> and writes it to this page.
-            </p>
-        </div>
-        <div class="row">
-            <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Id</th><th>Username</th>
-                  </tr>
-                </thead>
-                <tbody id="result">
-                
-                <tbody>
-            </table>
-        </div>
-    </div>
-
--->
-
-
-<body class="{% if current_profile.gender == 'female' %}theme-female{% elif current_profile.gender == 'male' %}theme-male{% endif %}">
-
+<h3 class="mb-4">Profiles who liked you ♥</h3>
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
     {% for p in profiles %}
-    {% if p.picture1 %}
-    <!--with a picture-->
+    
 
     <div class="col">
         <div class="card profile-card" id="card ">
             <div class="profile-card-img">
+
+                {% if p.picture1 %}
                  <img src="{{p.picture1}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
+
+                {% endif %}
+                {% if not p.picture1 %}
+                 <div class="profile-initials">{{p.username[:2].upper()}}</div>
+                {% endif %}
+
+
                
              </div>
             <div class="card-body">
@@ -184,60 +160,24 @@
                      </form>
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>
-                <div class="d-flex gap-2">
-                     <!--dislike and like-->
+                <!-- <div class="d-flex gap-2">
                     <form method="POST" action="#" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
                     <form method="POST" action="/like/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-like w-100">♥</button>
                     </form>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
-    {% endif %}
-    {% if not p.picture1 %}
-    <!--without a picture-->
-
-     <div class="col">
-        <div class="card profile-card" id="card" >
-            <div class="profile-card-img bg-purple">
-                <!--take the username and work this logic : initials = username[0].upper() to display here-->
-                <div class="profile-initials">{{p.username[:2].upper()}}</div>
-            </div>
-            <div class="card-body">
-                <div class="d-flex align-items-baseline gap-2 mb-2">
-                    <span class="profile-name">{{p.username}}</span>
-                    <span class="profile-age text-muted">{{p.age}}</span>
-                    <!--Report button-->
-                    <form method="POST" action="#" class="ms-auto">
-                         <button type="submit" class="btn-report">⚑</button>
-                     </form>
-                </div>
-                <p class="profile-bio text-muted">{{p.bio}}</p>
-                <div class="d-flex gap-2">
-                    <!--dislike and like-->
-                    <form method="POST" action="#" class="flex-fill">
-                        <button type="submit" class="btn btn-dislike w-100">✕</button>
-                    </form>
-                    <form method="POST" action="/like/{{p.id}}" class="flex-fill">
-                        <button type="submit" class="btn btn-like w-100">♥</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+    
     {% endfor %}
-    <!-- repeat for others -->
-
-    <!--scroll to top button-->
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" id="scrollTop">↑</button>
-
 </div>
 
-</body>
+{% if profiles|length == 0 %}
+    <p class="text-muted">No one has liked your profile yet</p>
+{% endif %}
 
 
 
