@@ -22,7 +22,8 @@ class ProfileBase(SQLModel):
 class Profile(ProfileBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field( foreign_key="user.id")
-
+    is_blocked: bool = False
+    
 class adminProfile(ProfileBase, table=True):  
    #inherited role from userBase
     id: Optional[int] = Field(default=None, primary_key=True)
