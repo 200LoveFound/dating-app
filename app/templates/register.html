@@ -8,11 +8,7 @@
 {% block internal_css %}
 <style>
 
-    * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+  
 
 
     body {
@@ -21,7 +17,8 @@
     }
 
     .login-container {
-        min-height: 100vh;
+        height: 100vh;
+        padding: 2rem;
         
     }
 
@@ -29,6 +26,7 @@
         border: none;
         border-radius: 1rem;
         overflow: hidden;
+        height: 95vh;
     }
 
     .login-image {
@@ -60,6 +58,7 @@
 .btn-primary:hover {
     background-color: #16213e;
     border-color: #16213e;
+
 }
 
 </style>
@@ -128,7 +127,7 @@
 <div class="container login-container d-flex align-items-center justify-content-center">
 
     <form id="signUpForm" method="POST" action="/register">
-    <div class="card shadow-lg login-card col-lg-12">
+    <div class="card shadow-lg login-card col-lg-12" >
         <div class="row g-0">
             <!-- Left side -->
             <div class="col-lg-6 login-image">

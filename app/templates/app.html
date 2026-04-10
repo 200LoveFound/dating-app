@@ -4,6 +4,74 @@
 <script src="{{ url_for('static', path='js/app.js')}}"></script>
 {% endblock %}
 
+{% block additional_styles %}
+<style>
+
+/*Page mode is implemented here simply*/
+
+body{
+    /*if profile.gender == female*/
+    background: linear-gradient(135deg, #e67ed0, #fdfeff, #fcb0eb, #fdfeff );
+    /*elif profile.gender == male */
+   /* background: linear-gradient(135deg, #52a0ff, #fdfeff, hsl(213, 83%, 68%), #fdfeff );*/
+}
+
+
+
+
+#sidebar {
+    background-color: black;
+}
+
+
+
+#card {
+    border-radius: 1rem;
+    
+}
+
+.profile-card-img {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    
+
+
+}
+
+.profile-initials {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 500;
+    color: white;
+    background: rgba(0,0,0,0.2);
+}
+
+.btn-like {
+    background: #E1F5EE;
+    color: #0F6E56;
+    border: 0.5px solid #5DCAA5;
+}
+
+.btn-dislike {
+    background: #FCEBEB;
+    color: #A32D2D;
+    border: 0.5px solid #F09595;
+}
+
+.profile-name { font-size: 16px; font-weight: 500; }
+.profile-age  { font-size: 13px; }
+.profile-bio  { font-size: 12px; line-height: 1.5; }
+</style>
+{% endblock %}
+
 
 {% block subpage_content %}
 
@@ -29,6 +97,65 @@
     </div>
 
 -->
+
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4" >
+
+    <!--with a picture-->
+
+    <div class="col">
+        <div class="card profile-card" id="card ">
+            <div class="profile-card-img">
+                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_xeNoq-RFf1bNb3y9FOxeTQCZMW1VMydKcA&s" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
+             </div>
+            <div class="card-body">
+                <div class="d-flex align-items-baseline gap-2 mb-2">
+                    <span class="profile-name">Bob</span>
+                    <span class="profile-age text-muted">21</span>
+                </div>
+                <p class="profile-bio text-muted">Loves hiking and bad puns. Looking for someone to go on adventures with.</p>
+                <div class="d-flex gap-2">
+                    <form method="POST" action="#" class="flex-fill">
+                        <button type="submit" class="btn btn-dislike w-100">✕</button>
+                    </form>
+                    <form method="POST" action="#" class="flex-fill">
+                        <button type="submit" class="btn btn-like w-100">♥</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--without a picture-->
+
+     <div class="col">
+        <div class="card profile-card" id="card" >
+            <div class="profile-card-img bg-purple">
+                <!--take the username and work this logic : initials = username[0].upper() to display here-->
+                <div class="profile-initials">SC</div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-baseline gap-2 mb-2">
+                    <span class="profile-name">Sarah C.</span>
+                    <span class="profile-age text-muted">24</span>
+                </div>
+                <p class="profile-bio text-muted">Loves hiking and bad puns. Looking for someone to go on adventures with.</p>
+                <div class="d-flex gap-2">
+                    <form method="POST" action="/dislike/1" class="flex-fill">
+                        <button type="submit" class="btn btn-dislike w-100">✕</button>
+                    </form>
+                    <form method="POST" action="/like/1" class="flex-fill">
+                        <button type="submit" class="btn btn-like w-100">♥</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- repeat for others -->
+
+</div>
+
 
 
 
