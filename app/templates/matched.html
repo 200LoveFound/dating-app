@@ -7,7 +7,7 @@
 {% block additional_styles %}
 <style>
 
-/*Page mode is implemented here simply*/
+
 
 .theme-female {
     background: linear-gradient(135deg, #e67ed0, #fdfeff, #fcb0eb, #fdfeff);
@@ -137,32 +137,11 @@
 
 
 
-  <!--  <div class="container" id="content">
-        <div class="row">
-            <p>
-                This is table is rendered on the Client. JavaScript code requests the data from <a href="/api/users">/api/users</a> and writes it to this page.
-            </p>
-        </div>
-        <div class="row">
-            <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Id</th><th>Username</th>
-                  </tr>
-                </thead>
-                <tbody id="result">
-                
-                <tbody>
-            </table>
-        </div>
-    </div>
 
--->
-
-
+<!--router logic to handle this 
 <body class="{% if current_profile.gender == 'female' %}theme-female{% elif current_profile.gender == 'male' %}theme-male{% endif %}">
-
-
+-->
+<p><b>It's a match! &#x1F496</b> </p>
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
     {% for p in profiles %}
     {% if p.picture1 %}
@@ -185,13 +164,10 @@
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
-                     <!--dislike and like-->
-                    <form method="POST" action="#" class="flex-fill">
-                        <button type="submit" class="btn btn-dislike w-100">✕</button>
-                    </form>
-                    <form method="POST" action="#" class="flex-fill">
-                        <button type="submit" class="btn btn-like w-100">♥</button>
-                    </form>
+                         <a href="#" class="btn w-100" style="background: rgba(255,255,255,0.7); color: #72243E; border: 0.5px solid #D4537E;">
+                              💭 Message
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -217,17 +193,13 @@
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
-                    <!--dislike and like-->
-                    <form method="POST" action="#" class="flex-fill">
-                        <button type="submit" class="btn btn-dislike w-100">✕</button>
-                    </form>
-                    <form method="POST" action="#" class="flex-fill">
-                        <button type="submit" class="btn btn-like w-100">♥</button>
-                    </form>
-                </div>
+                    <a href="#" class="btn w-100" style="background: rgba(255,255,255,0.7); color: #72243E; border: 0.5px solid #D4537E;">
+                              💭 Message
+                        </a>
             </div>
         </div>
     </div>
+     </div>
     {% endif %}
     {% endfor %}
     <!-- repeat for others -->

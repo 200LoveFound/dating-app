@@ -14,12 +14,17 @@ async def user_home_view(
     user: AuthDep,
     db:SessionDep
 ):
-    profiles = db.exec(select(Profile)).all()
+    
+    current_profile = db.exec(select(Profile).where(Profile.user_id == user.id)).first()
+    profiles = db.exec(select(Profile).where(Profile.gender == current_profile.preferred_gender)).all()
+
+
     return templates.TemplateResponse(
         request=request, 
         name="app.html",
         context={
             "user": user,
+            "current_profile" : current_profile,
             "profiles":profiles
         }
     )
