@@ -7,12 +7,22 @@
 
 {% block internal_css %}
 <style>
+
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
     body {
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #6e1313);
+        overflow: hidden;
     }
 
     .login-container {
         min-height: 100vh;
+        
     }
 
     .login-card {
@@ -22,7 +32,7 @@
     }
 
     .login-image {
-        background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+        background: black;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -41,19 +51,31 @@
     .form-control {
         border-radius: 0.5rem;
     }
+
+.btn-primary {
+    background-color: #1a1a2e;
+    border-color: #1a1a2e;
+}
+
+.btn-primary:hover {
+    background-color: #16213e;
+    border-color: #16213e;
+}
+
 </style>
 {% endblock %}
 
 
 {% block content %}
 
-<div class="container login-container d-flex align-items-center justify-content-center">
+
+<!--<div class="container login-container d-flex align-items-center justify-content-center">
     <div class="card shadow-lg login-card col-lg-10">
         <div class="row g-0">
             <div class="col-lg-6 d-none d-lg-flex login-image">
                 <div class="text-center">
-                    <h2 class="mt-4 fw-bold">Registration</h2>
-                    <p class="lead">Create an account for the app</p>
+                    <h2 class="mt-4 fw-bold">Let's set up your profile!</h2>
+                  <p class="lead">Let's set up your profile!</p>  
                 </div>
             </div>
             <div class="col-lg-6 bg-white">
@@ -100,4 +122,85 @@
         </div>
     </div>
 </div>
+
+-->
+
+<div class="container login-container d-flex align-items-center justify-content-center">
+
+    <form id="signUpForm" method="POST" action="/register">
+    <div class="card shadow-lg login-card col-lg-12">
+        <div class="row g-0">
+            <!-- Left side -->
+            <div class="col-lg-6 login-image">
+                <div class="w-100"> 
+                <h2 class="mt-4 fw-bold">Let's set up your profile!</h2>
+                <p class="lead">General information</p>
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                </div>
+            </div>
+
+            <!-- Right side -->
+            <div class="col-lg-6 bg-white">
+                <div class="form-section">
+                    <h3 class="fw-bold mb-4">Profile details</h3>
+
+                    <div class="mb-3">
+                        <label class="form-label">Age</label>
+                        <input type="text" class="form-control" name="age" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Birthday</label>
+                          <input type="date" class="form-control" name="birthday" required>
+                    </div>
+
+                    <div class="mb-3">
+                       <label class="form-label">Gender</label>
+                        <select class="form-control" name="gender" required>
+                            <option value="">Select...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+
+                     <div class="mb-3">
+                        <label class="form-label">Preference</label>
+                        <select class="form-control" name="preference" required>
+                            <option value="">Select...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+                  
+</div>
+</div>
+
+            
+
+
+
+</div>
+
 {% endblock %}
