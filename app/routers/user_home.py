@@ -61,6 +61,24 @@ def like_profile(request: Request, user: AuthDep, db:SessionDep, profileId: int)
     newLike=Like(liker_id=mine.id, liked_id=profileId)
     db.add(newLike)
     db.commit()
+
+
+
+    ##check if the profile you're liking alr liked you 
+    mutual=db.exec(select(Like).where(Like.liker_id==profileId, Like.liked_id==mine.id)).first()
+    if mutual:
+
+        ##order it to prevent duplicates
+        p1=min(mine.id, profileId)
+        p2=max(mine.id, profileId)
+        ##check if the mutual connection was alr made
+        exist=db.exec(select(Match).where(Match.profile1_id==p1, Match.profile2_id==p2)).first()
+
+        if not exist:
+            match=Match(profile1_id=p1, profile2_id=p2)
+            db.add(match)
+            db.commit()
+
     return RedirectResponse(
         url="/app",
         status_code=status.HTTP_303_SEE_OTHER
@@ -107,3 +125,61 @@ def liked_by_profiles(request: Request, user: AuthDep, db:SessionDep):
     )
     
 
+@router.get("/matches", response_class=HTMLResponse)
+def see_matches(request: Request, user:AuthDep, db:SessionDep):
+    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+    if not mine:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found, cannot find see who liked your profile")
+    matches=db.exec(select(Match).where((Match.profile1_id==mine.id)|(Match.profile2_id==mine.id))).all()
+
+    matched_profiles=[]
+    for m in matches:
+        if m.profile1_id==mine.id:
+            other_id=m.profile2_id
+        else:
+            other_id=m.profile1_id
+        otherprof=db.exec(select(Profile).where(Profile.id==other_id)).one_or_none()
+        if otherprof:
+            matched_profiles.append(otherprof)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="matches.html",
+        context={
+            "user": user,
+            "profiles": matched_profiles
+        }
+    )
+
+
+
+
+@router.post("/unlike/{profileId}")
+def unlike_profile(request: Request, user: AuthDep, db: SessionDep, profileId: int):
+    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+    if not mine:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+
+    like=db.exec(select(Like).where(Like.liker_id==mine.id, Like.liked_id==profileId)).one_or_none()
+
+    if not like:
+        return RedirectResponse(
+        url="/app",
+        status_code=status.HTTP_303_SEE_OTHER
+    )
+
+    db.delete(like)
+    db.commit()
+
+    ## delete a match if a match was created prev with the person you want to unlike
+    p1=min(mine.id, profileId)
+    p2=max(mine.id, profileId)
+    exist=db.exec(select(Match).where(Match.profile1_id==p1, Match.profile2_id==p2)).first()
+    if exist:
+        db.delete(exist)
+        db.commit()
+
+    return RedirectResponse(url="/liked", status_code=status.HTTP_303_SEE_OTHER)
+
+    
