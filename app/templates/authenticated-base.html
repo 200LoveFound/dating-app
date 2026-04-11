@@ -25,15 +25,34 @@
         margin-left: -250px;
     }
 
+  @media (max-width: 768px) {
+    #sidebar {
+        position: fixed;
+        z-index: 999;
+        margin-left: -250px;
+        transition: all 0.3s;
+        height: 100vh;
+    }
+
+    #sidebar.collapsed {
+        margin-left: -250px;
+    }
+
+    #sidebar:not(.collapsed) {
+        margin-left: 0;
+    }
+
+}
+
     #sidebar .nav-link {
         color: white;
         font-weight: 500;
     }
 
-    #sidebar .nav-link:hover
+    #sidebar .nav-link:hover,
     #sidebar .nav-link.active {
-        color: #fff;
-        background-color: #4b7aaf;
+        background-color: rgba(255, 255, 255, 0.7);
+        color: #333;
         border-radius: 0.5rem;
         
     }
@@ -46,6 +65,7 @@
         transition: all 0.3s;
         display: flex;
         flex-direction: column;
+        min-height: 100vh;
     }
 
     .card {
@@ -61,6 +81,10 @@
         border-bottom: 1px solid #dee2e6;
     }
 
+   
+
+
+
 </style>
 
 {% block additional_styles %}{% endblock %}
@@ -72,7 +96,7 @@
 <div id="wrapper">
 
     <nav id="sidebar" class="p-3 d-flex flex-column vh-100">
-        <h4 class="text-white mb-4 text-center py-4">Love Found &#x1F495</h4>
+        <h4 class="text-black mb-4 text-center py-4" >Love Found &#x1F495</h4>
 
         <ul class="nav nav-pills flex-column gap-2 flex-grow-1">
             <li class="nav-item">
@@ -104,7 +128,7 @@
             </li>
 
              <li class="nav-item">
-                <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/app' }}" href="/app">
+                <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/profile' }}" href="/app">
                     <span > &#x1F525 </span>
                     Profile Info
                 </a>
@@ -153,9 +177,23 @@
 
 
 <script>
-    document.getElementById("menu-toggle").addEventListener("click", function () {
-        document.getElementById("sidebar").classList.toggle("collapsed");
-    });
+document.getElementById("menu-toggle").addEventListener("click", function () {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+});
+
+document.addEventListener('click', function(e) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('menu-toggle');
+    
+    if (window.innerWidth <= 768 && 
+        !sidebar.contains(e.target) && 
+        !toggle.contains(e.target) && 
+        !sidebar.classList.contains('collapsed')) {
+        sidebar.classList.add('collapsed');
+    }
+});
+
+
 </script>
 
 {% block subpage_scripts %}{% endblock %}
