@@ -4,9 +4,190 @@
 <script src="{{ url_for('static', path='js/app.js')}}"></script>
 {% endblock %}
 
+{% block additional_styles %}
+<style>
+body{
+    background: linear-gradient(135deg, #52a0ff, #fdfeff, hsl(213, 83%, 68%), #fdfeff );
+}
+
+#sidebar {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    color: #000;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#sidebar .nav-link {
+    background: rgba(255, 255, 255, 0.4);
+    color: #72243E;
+    border-radius: 0.5rem;
+    border: none;
+}
+
+#sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.7);
+    color: #4B1528;
+}
+
+.profile-card {
+    max-width: 320px;
+    flex-shrink: 0;
+    margin: 0 auto;
+    border-radius: 1rem;
+}
+
+.profile-card-img {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem 1rem 0 0;
+    background: rgba(255,255,255,0.35);
+}
+
+.profile-initials {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 500;
+    color: white;
+    background: rgba(0,0,0,0.2);
+}
+
+.profile-name { font-size: 16px; font-weight: 600; }
+.profile-age  { font-size: 13px; }
+.profile-bio  { font-size: 12px; line-height: 1.5; }
+
+.report-meta {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.report-reason-box {
+    background: #fff5f5;
+    border: 1px solid #f1b0b7;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    font-size: 13px;
+    color: #842029;
+    min-height: 90px;
+}
+
+.btn-block-user {
+    background: #FCEBEB;
+    color: #A32D2D;
+    border: 0.5px solid #F09595;
+}
+
+.btn-ignore-report {
+    background: #E1F5EE;
+    color: #0F6E56;
+    border: 0.5px solid #5DCAA5;
+}
+</style>
+{% endblock %}
 
 {% block subpage_content %}
 
-   I am the admin page
+<div class="container-fluid py-4">
+    <h2 class="text-center mb-4">Reported Profiles</h2>
+
+    {% if reports %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-2 justify-content-center">
+        {% for r in reports %}
+        <div class="col">
+            <div class="card profile-card shadow-sm">
+
+                {% if r.reported_profile and r.reported_profile.picture1 %}
+                <div class="profile-card-img">
+                    <img src="{{ r.reported_profile.picture1 }}"
+                         alt="reported profile photo"
+                         class="w-100 h-100"
+                         style="object-fit: cover; border-radius: 1rem 1rem 0 0;">
+                </div>
+                {% else %}
+                <div class="profile-card-img">
+                    <div class="profile-initials">
+                        {% if r.reported_profile %}
+                            {{ r.reported_profile.username[:2].upper() }}
+                        {% else %}
+                            ??
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <span class="profile-name">
+                            {% if r.reported_profile %}
+                                {{ r.reported_profile.username }}
+                            {% else %}
+                                Unknown User
+                            {% endif %}
+                        </span>
+                        <span class="profile-age text-muted">
+                            {% if r.reported_profile %}
+                                {{ r.reported_profile.age }}
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <p class="profile-bio text-muted">
+                        {% if r.reported_profile and r.reported_profile.bio %}
+                            {{ r.reported_profile.bio }}
+                        {% else %}
+                            No bio available.
+                        {% endif %}
+                    </p>
+
+                    <div class="report-meta">
+                        <div>
+                            <strong>Reported by:</strong>
+                            {% if r.reporter_profile %}
+                                {{ r.reporter_profile.username }}
+                            {% else %}
+                                Unknown
+                            {% endif %}
+                        </div>
+                        <div>
+                            <strong>Date:</strong> {{ r.date_reported }}
+                        </div>
+                    </div>
+
+                    <div class="report-reason-box mb-3">
+                        <strong>Reason:</strong><br>
+                        {{ r.reason }}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <form method="POST" action="/admin/block/{{r.id}}" class="flex-fill">
+                            <button type="submit" class="btn btn-block-user w-100">
+                                Block Profile
+                            </button>
+                        </form>
+                        <form method="POST" action="/admin/ignore/{{r.id}}" class="flex-fill">
+                            <button type="submit" class="btn btn-ignore-report w-100">
+                                Ignore and Delete Report
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center mt-5">
+        <p>No reports have been submitted yet.</p>
+    </div>
+    {% endif %}
+</div>
 
 {% endblock %}

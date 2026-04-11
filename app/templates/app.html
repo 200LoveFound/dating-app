@@ -179,9 +179,10 @@
                      <span class="profile-name">{{p.username}}</span>
                      <span class="profile-age text-muted">{{p.age}}</span>
                      <!--report button-->
-                     <form method="POST" action="#" class="ms-auto">
+                     <form method="GET" action="/report/{{p.id}}" class="ms-auto">
                          <button type="submit" class="btn-report">⚑</button>
                      </form>
+
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
@@ -211,9 +212,10 @@
                     <span class="profile-name">{{p.username}}</span>
                     <span class="profile-age text-muted">{{p.age}}</span>
                     <!--Report button-->
-                    <form method="POST" action="#" class="ms-auto">
+                    <form method="GET" action="/report/{{p.id}}" class="ms-auto">
                          <button type="submit" class="btn-report">⚑</button>
                      </form>
+
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
