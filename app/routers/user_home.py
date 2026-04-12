@@ -42,6 +42,13 @@ async def user_home_view(
     newquery = select(Profile).where(Profile.id!=current_profile.id, Profile.is_blocked==False)
     if reportedids:
         newquery=newquery.where(Profile.id.not_in(reportedids))
+
+    if liked_ids:
+        newquery = newquery.where(Profile.id.not_in(liked_ids))
+
+    if disliked_ids:
+        newquery = newquery.where(Profile.id.not_in(disliked_ids))
+
     if current_profile.preferred_gender.lower() != "any":
         newquery = newquery.where(Profile.gender==current_profile.preferred_gender)
     profiles = db.exec(newquery).all() 
@@ -123,8 +130,12 @@ def liked_profiles(request: Request, user: AuthDep, db:SessionDep):
     mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
     if not mine:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found, cannot find liked profiles")
+   
+
     
     liked=db.exec(select(Profile).join(Like, Like.liked_id==Profile.id).where(Like.liker_id==mine.id)).all()
+
+    
 
     return templates.TemplateResponse(
         request= request,
@@ -181,6 +192,7 @@ def see_matches(request: Request, user:AuthDep, db:SessionDep):
         name="matches.html",
         context={
             "user": user,
+            "mine" : mine,
             "profiles": matched_profiles
         }
     )

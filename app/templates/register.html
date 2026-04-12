@@ -12,7 +12,7 @@
 
 
     body {
-        background: linear-gradient(135deg, #1a1a2e, #16213e, #6e1313);
+        background: linear-gradient(135deg, #1a0a0f, #3d1a2e, #6e2d4a);
         overflow: hidden;
     }
 
@@ -162,7 +162,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Birthday</label>
-                          <input type="date" class="form-control" name="birthday" required>
+                          <input type="date" class="form-control" name="birthday" required max="{{ today }}">
                     </div>
 
                     <div class="mb-3">
@@ -182,24 +182,33 @@
                             <option value="female">Female</option>
                         </select>
                     </div>
+                    
+
 
                     <div class="d-grid mb-3">
                         <button type="submit" class="btn btn-primary btn-lg">Register</button>
                     </div>
+
+                    {% for message in get_flashed_messages(request) %}
+                     <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
+                      {% endfor %}
                 </div>
             </div>
 
         </div>
     </div>
 </form>
+
+
                   
 </div>
-</div>
 
-            
+<script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error')) {
+        alert(params.get('error'));
+    }
+</script>
 
-
-
-</div>
 
 {% endblock %}

@@ -187,7 +187,7 @@
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
                      <!--dislike and like-->
-                    <form method="POST" action="#" class="flex-fill">
+                    <form method="POST" action="/unlike/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
                     <form method="POST" action="/like/{{p.id}}" class="flex-fill">
@@ -220,7 +220,7 @@
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
                     <!--dislike and like-->
-                    <form method="POST" action="#" class="flex-fill">
+                    <form method="POST" action="unlike/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
                     <form method="POST" action="/like/{{p.id}}" class="flex-fill">
@@ -241,6 +241,58 @@
 
 </body>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    if (window.innerWidth <= 768) {
+        const cards = document.querySelectorAll('.profile-card');
+
+        cards.forEach(card => {
+            let startX = 0;
+            let currentX = 0;
+
+            card.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+            });
+
+            card.addEventListener('touchmove', (e) => {
+                currentX = e.touches[0].clientX;
+                const diff = currentX - startX;
+
+                card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
+                card.style.transition = 'none';
+
+                if (diff > 0) {
+                    card.style.boxShadow = `0 0 20px rgba(93, 202, 165, ${Math.min(diff / 100, 0.8)})`;
+                } else {
+                    card.style.boxShadow = `0 0 20px rgba(240, 149, 149, ${Math.min(Math.abs(diff) / 100, 0.8)})`;
+                }
+            });
+
+            card.addEventListener('touchend', () => {
+                const diff = currentX - startX;
+                card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+
+                if (diff > 100) {
+                    card.style.transform = 'translateX(150%) rotate(20deg)';
+                    setTimeout(() => {
+                        card.closest('.col').querySelector('form[action*="/like/"]').submit();
+                    }, 300);
+
+                } else if (diff < -100) {
+                    card.style.transform = 'translateX(-150%) rotate(-20deg)';
+                    setTimeout(() => {
+                        card.closest('.col').querySelector('form[action*="/unlike/"]').submit();
+                    }, 300);
+
+                } else {
+                    card.style.transform = '';
+                    card.style.boxShadow = '';
+                }
+            });
+        });
+    }
+});
+</script>
 
 
 {% endblock %}

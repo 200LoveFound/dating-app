@@ -7,13 +7,18 @@ from app.services.auth_service import AuthService
 from app.repositories.user import UserRepository
 from app.utilities.flash import flash
 from . import router, templates
+from datetime import date
+from sqlalchemy import func
 
 # View route (loads the page)
 @router.get("/register", response_class=HTMLResponse)
 async def register_view(request: Request):
     return templates.TemplateResponse(
-        request=request, 
+        request=request,
         name="register.html",
+        context={
+            "today": date.today().isoformat()
+        }
     )
 
 # Action route (performs an action)
@@ -28,6 +33,23 @@ def signup_user(request:Request, db:SessionDep,
     preference: str = Form(),
 
 ):
+    
+    calculated_age = (date.today() - birthday).days //365
+    if calculated_age != int(age):
+     return RedirectResponse(url="/register?error=Your age and birthday don't match", status_code=status.HTTP_303_SEE_OTHER)
+     
+    if calculated_age < 18 or calculated_age > 100:
+      return RedirectResponse(url="/register?error=You need to be 18 years or older to access this application",status_code=status.HTTP_303_SEE_OTHER )
+       
+    existing_username = db.exec(select(Profile).where(func.lower(Profile.username) == username.strip().lower())).first()
+    if existing_username:
+      return RedirectResponse(url="/register?error=Username already taken", status_code=status.HTTP_303_SEE_OTHER)
+
+    existing_email = db.exec(select(User).where(func.lower(User.email) == email.strip().lower())).first()
+    if existing_email:
+      return RedirectResponse(url="/register?error=Email already in use", status_code=status.HTTP_303_SEE_OTHER)
+
+
     user_repo = UserRepository(db)
     auth_service = AuthService(user_repo)
     try:
