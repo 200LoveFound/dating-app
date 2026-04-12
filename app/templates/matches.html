@@ -142,12 +142,12 @@
         <div class="card profile-card" id="card ">
             <div class="profile-card-img">
 
-                {% if p.picture1 %}
-                 <img src="{{p.picture1}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
+                {% if p.profile.picture1 %}
+                 <img src="{{p.profile.picture1}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
 
                 {% endif %}
-                {% if not p.picture1 %}
-                 <div class="profile-initials">{{p.username[:2].upper()}}</div>
+                {% if not p.profile.picture1 %}
+                 <div class="profile-initials">{{p.profile.username[:2].upper()}}</div>
                 {% endif %}
 
 
@@ -155,18 +155,21 @@
              </div>
             <div class="card-body">
                 <div class="d-flex align-items-baseline gap-2 mb-2">
-                     <span class="profile-name">{{p.username}}</span>
-                     <span class="profile-age text-muted">{{p.age}}</span>
+                     <span class="profile-name">{{p.profile.username}}</span>
+                     <span class="profile-age text-muted">{{p.profile.age}}</span>
                      <!--report button-->
-                     <form method="POST" action="#" class="ms-auto">
+                     <form method="POST" action="/report/{{p.profile.id}}" class="ms-auto">
                          <button type="submit" class="btn-report">⚑</button>
                      </form>
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
-                    <form method="POST" action="/unlike/{{p.id}}" class="flex-fill">
+                    <form method="POST" action="/unlike/{{p.profile.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
+                    <a href="/chat/{{ p.match_id }}" class="btn btn-like w-100 flex-fill">
+                        💬 Message
+                    </a>
                    <!-- <form method="POST" action="/like/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-like w-100">♥</button>
                     </form> -->
