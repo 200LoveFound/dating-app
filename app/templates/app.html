@@ -218,6 +218,7 @@
                 </div>
 
                 <p class="profile-bio text-muted">{{p.bio}}</p>
+                <!-- <a href="/profile/{{p.id}}" class="btn btn-light w-100 mt-2">View Profile</a> -->
                 <div class="d-flex gap-2">
                      <!--dislike and like-->
                     <form method="POST" action="/dislike/{{p.id}}" class="flex-fill">
@@ -267,9 +268,10 @@
                 </div>
 
                 <p class="profile-bio text-muted">{{p.bio}}</p>
+                <!-- <a href="/profile/{{p.id}}" class="btn btn-light w-100 mt-2">View Profile</a> -->
                 <div class="d-flex gap-2">
                     <!--dislike and like-->
-                    <form method="POST" action="unlike/{{p.id}}" class="flex-fill">
+                    <form method="POST" action="/dislike/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
                     <form method="POST" action="/like/{{p.id}}" class="flex-fill">
@@ -329,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else if (diff < -100) {
                     card.style.transform = 'translateX(-150%) rotate(-20deg)';
                     setTimeout(() => {
-                        card.closest('.col').querySelector('form[action*="/unlike/"]').submit();
+                        card.closest('.col').querySelector('form[action*="/dislike/"]').submit();
                     }, 300);
 
                 } else {

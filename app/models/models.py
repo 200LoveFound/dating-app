@@ -90,4 +90,9 @@ class DisLike(SQLModel, table=True):
 
 
 
-
+# to generate daily picks for a user based on prefered gender, simialrities in age, and people who alr liked you
+class DailyPick(SQLModel, table=True):
+    id: Optional[int]=Field(default=None, primary_key=True)
+    profile_id: int=Field(foreign_key="profile.id")    #for the user who is going to receieve the daily picks
+    suggested_profile_id: int=Field(foreign_key="profile.id")   #who the daily picks could include
+    date_generated: date=Field(default_factory=date.today)   

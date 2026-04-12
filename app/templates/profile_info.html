@@ -130,24 +130,33 @@
 
 {% block subpage_content %}
 
-<body class="{% if mine.gender == 'female' %}theme-female{% elif mine.gender == 'male' %}theme-male{% endif %}"></body>
+<body class="{% if mine.gender == 'female' %}theme-female{% elif mine.gender == 'male' %}theme-male{% endif %}">
 
-<h3 class="mb-4">Your Matches 🔥</h3>
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
-    {% for p in profiles %}
+    
     
 
     <div class="col">
         <div class="card profile-card" id="card ">
             <div class="profile-card-img">
 
-                {% if p.profile.picture1 %}
-                 <img src="{{p.profile.picture1}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
+                {% if profile.picture1 %}
+                 <img src="{{profile.picture1}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
 
                 {% endif %}
-                {% if not p.profile.picture1 %}
-                 <div class="profile-initials">{{p.profile.username[:2].upper()}}</div>
+                {% if not profile.picture1 %}
+                 <div class="profile-initials">{{profile.username[:2].upper()}}</div>
+                {% endif %}
+
+                {% if profile.picture2 %}
+                 <img src="{{profile.picture2}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
+
+                {% endif %}
+
+                {% if profile.picture3 %}
+                 <img src="{{profile.picture3}}" alt="profile photo" class="w-100 h-100" style="object-fit: cover;border-radius: 1rem 1rem 0 0;">
+
                 {% endif %}
 
 
@@ -155,36 +164,54 @@
              </div>
             <div class="card-body">
                 <div class="d-flex align-items-baseline gap-2 mb-2">
-                     <span class="profile-name">{{p.profile.username}}</span>
-                     <span class="profile-age text-muted">{{p.profile.age}}</span>
-                     <!--report button-->
-                     <form method="POST" action="/report/{{p.profile.id}}" class="ms-auto">
-                         <button type="submit" class="btn-report">⚑</button>
-                     </form>
+                     <span class="profile-name">{{profile.username}}</span>
+                     <span class="profile-age text-muted">{{profile.age}}</span>
+                     
+                     {% if matched %}
+                     <div class="alert alert-success text-center">You are matched with {{profile.username}} </div>
+                     {% endif %}
+                     
                 </div>
-                <p class="profile-bio text-muted">{{p.bio}}</p>
+                <p class="profile-bio text-muted">{{profile.bio}}</p>
                 <div class="d-flex gap-2">
-                    <form method="POST" action="/unlike/{{p.profile.id}}" class="flex-fill">
+                    
+                    {% if not already_disliked %}
+                    <form method="POST" action="/dislike/{{profile.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
-                    <a href="/chat/{{ p.match_id }}" class="btn btn-like w-100 flex-fill">
-                        💬 Message
-                    </a>
-                   <!-- <form method="POST" action="/like/{{p.id}}" class="flex-fill">
-                        <button type="submit" class="btn btn-like w-100">♥</button>
-                    </form> -->
-                </div> 
+                    {% endif %}
+                    
+                    {% if already_disliked %}
+                        <div class="alert alert-success text-center">You disliked the profile of {{profile.username}} </div>
+                    {% endif %}
+
+                    {% if not already_liked %}
+                    <form method="POST" action="/like/{{profile.id}}" class="flex-fill">
+                        <button type="submit" class="btn btn-dislike w-100">♥</button>
+                    </form>
+                    {% endif %}
+
+                    {% if already_liked %}
+                        <div class="alert alert-success text-center">You liked the profile of {{profile.username}} </div>
+                    {% endif %}
+
+
+                    <!--report button-->
+                     <form method="POST" action="#" class="ms-auto">
+                         <button type="submit" class="btn-report">⚑</button>
+                     </form>
+
+
+                     <div class="mt-3">
+                        <a href="/app" class="btn btn-secondary w-100"> <- Back to Browse</a>
+                     </div>
+                </div>
             </div>
         </div>
     </div>
     
-    {% endfor %}
+    
 </div>
-
-{% if profiles|length == 0 %}
-    <p class="text-muted">No matches have been made yet.</p>
-{% endif %}
-
 
 
 {% endblock %}
