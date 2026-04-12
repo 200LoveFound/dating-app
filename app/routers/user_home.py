@@ -185,7 +185,10 @@ def see_matches(request: Request, user:AuthDep, db:SessionDep):
             other_id=m.profile1_id
         otherprof=db.exec(select(Profile).where(Profile.id==other_id)).one_or_none()
         if otherprof:
-            matched_profiles.append(otherprof)
+            matched_profiles.append({
+                "match_id" : m.id,
+                "profile" : otherprof
+            })
 
     return templates.TemplateResponse(
         request=request,
