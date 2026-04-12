@@ -297,3 +297,239 @@ async def submit_report(request: Request, user: AuthDep, db: SessionDep, profile
     db.add(newreport)
     db.commit()
     return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+
+
+
+##for daily picks
+@router.get("/daily_picks", response_class=HTMLResponse)
+def daily_picks(request: Request, user: AuthDep, db:SessionDep):
+    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+    if not mine: 
+        raise HTTPException(status_code=404, detail="Profile not found")
+    
+    today=date.today()
+
+    ##check if daily picks was alr generated for that user today
+    existing=db.exec(select(DailyPick).where((DailyPick.profile_id==mine.id)& (DailyPick.date_generated==today))).all()
+    if not existing:
+        ##get everyone who liked 
+        liked_ids=db.exec(select(Like.liked_id).where(Like.liker_id==mine.id)).all()
+
+        ##everyone who disliked
+        disliked_ids=db.exec(select(DisLike.disliked_id).where(DisLike.disliker_id==mine.id)).all()
+
+        ##get reported 
+        reported_ids=db.exec(select(reportedProfile.profile_id).where(reportedProfile.reported_by==mine.id)).all()
+
+        q=select(Profile).where(Profile.id!=mine.id, Profile.is_blocked==False)
+
+        if liked_ids:
+            q=q.where(Profile.id.not_in(liked_ids))
+
+        if disliked_ids:
+            q=q.where(Profile.id.not_in(disliked_ids))
+
+
+        if reported_ids:
+            q=q.where(Profile.id.not_in(reported_ids))
+
+        
+        if mine.preferred_gender.lower() !="any":
+            q=q.where(Profile.gender==mine.preferred_gender)
+
+        candidates=db.exec(q).all()
+
+        ##use a score system to keep track of the top picks
+        scored=[]
+        for c in candidates: 
+            score=0
+
+            ##give boost if the profile is verified
+            if c.is_verified:
+                score+=5
+            
+            ##find age diff between the profiles, and if similar in age (2 yrs, 5yrs, 10) then give boost to that profile
+            try:
+                diff=abs(int(c.age)-int(mine.age))
+                if diff<=2:
+                    score+=5
+                elif diff<=5:
+                    score+=3
+                elif diff<=10:
+                    score+=1
+            except:
+                pass
+
+            ##see if other profile alr liked you 
+            liked_alr=db.exec(select(Like).where((Like.liker_id==c.id)&(Like.liked_id==mine.id))).first()
+            if liked_alr:
+                score+=10
+
+            scored.append((c, score))
+        
+        ##sort all scores in desc order (so top picks are first)
+        scored.sort(key=lambda x: x[1], reverse=True)
+
+        ##get top 5 picks
+        top=scored[:5]
+
+        for prof, score in top:
+            dailyPick= DailyPick(profile_id=mine.id, suggested_profile_id=prof.id)
+            db.add(dailyPick)
+        db.commit()
+
+
+        #get new daily picked candiddates
+        existing=db.exec(select(DailyPick).where((DailyPick.profile_id==mine.id)&(DailyPick.date_generated==today))).all()
+    ##to account for if the user alr liked/disliked a profile in the daily top picks
+    liked_ids=db.exec(select(Like.liked_id).where(Like.liker_id==mine.id)).all()
+
+    disliked_ids=db.exec(select(DisLike.disliked_id).where(DisLike.disliker_id==mine.id)).all()
+
+    ##get the daily picked candidates' profiles
+    suggestedprofiles=[]
+    for pick in existing:
+        #skip if the user alr liked/disliked the profile
+        if pick.suggested_profile_id in liked_ids:
+            continue
+        if pick.suggested_profile_id in disliked_ids:
+            continue
+
+
+        profile=db.exec(select(Profile).where(Profile.id==pick.suggested_profile_id)).one_or_none()
+        if profile:
+            suggestedprofiles.append(profile)
+    completed=False
+    if len(existing)>0 and len(suggestedprofiles)==0:
+        completed=True
+    return templates.TemplateResponse(
+        request=request,
+        name="daily_picks.html",
+        context={
+            "user": user,
+            "mine": mine,
+            "profiles": suggestedprofiles,
+            "completed": completed
+        }
+    )
+        
+
+
+
+@router.post("/dislike/{profileId}")
+def dislike_profile(request: Request, user: AuthDep, db: SessionDep, profileId: int):
+    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+    if not mine:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+    if mine.id==profileId:
+        flash(request, "You cannot dislike your own profile")
+        return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+    
+    like=db.exec(select(Profile).where((Profile.id==profileId) )).one_or_none()
+
+    if not like:
+        
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+    ##see if user alr dislikde this profile
+    existing=db.exec(select(DisLike).where((DisLike.disliker_id==mine.id)& (DisLike.disliked_id==profileId))).first()
+    if existing:
+        return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+
+
+    newDislike=DisLike(disliker_id=mine.id, disliked_id=profileId)
+    db.add(newDislike)
+    db.commit()
+    return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+
+
+
+# @router.get("/profile/{profileId}", response_class=HTMLResponse)
+# def profile_info(request: Request, user: AuthDep, db:SessionDep, profileId: int):
+#     mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+#     if not mine:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+#     prof=db.exec(select(Profile).where(Profile.id==profileId)).one_or_none()
+#     if not mine:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+#     ##prevents viewing your own profile
+#     if mine.id==profileId:
+#         flash(request, "You cannot view your own profile")
+#         return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+    
+#     #check if alr liked/disliked/matched
+#     alr_liked=db.exec(select(Like).where((Like.liker_id==mine.id)& (Like.liked_id==prof.id))).first()
+
+#     alr_disliked = db.exec(
+#         select(DisLike).where((DisLike.disliker_id == mine.id) &(DisLike.disliked_id == prof.id))).first()
+
+   
+#     p1 = min(mine.id, prof.id)
+#     p2 = max(mine.id, prof.id)
+
+#     matched = db.exec(select(Match).where((Match.profile1_id == p1) & (Match.profile2_id == p2))).first()
+
+#     return templates.TemplateResponse(
+#         request=request,
+#         name="profile_info.html",
+#         context={
+#             "user": user,
+#             "mine": mine,
+#             "profile": prof,
+#             "already_liked": alr_liked is not None,
+#             "already_disliked": alr_disliked is not None,
+#             "matched": matched is not None
+#         }
+#     )
+
+
+
+@router.get("/my_profile", response_class=HTMLResponse)
+def my_profile_info(request: Request, user: AuthDep, db:SessionDep):
+    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+    if not mine:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    return templates.TemplateResponse(
+        request=request,
+        name="my_profile.html",
+        context={
+            "user":user,
+            "mine": mine
+        }
+    )
+
+
+@router.get("/my_profile/edit", response_class=HTMLResponse)
+def edit_my_profile_view(request: Request, user: AuthDep, db:SessionDep):
+    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+    if not mine:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    return templates.TemplateResponse(
+        request=request,
+        name="edit_profile.html",
+        context={
+            "user":user,
+            "mine": mine
+        }
+    )
+
+
+@router.post("/my_profile/edit")
+def edit_my_profile_action(request: Request, user: AuthDep, db:SessionDep, username: Annotated[str, Form()], bio: Annotated[str, Form()], age:Annotated[str, Form()], preferred_gender:Annotated[str, Form()]):
+    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+    if not mine:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    mine.username=username
+    mine.bio=bio
+    mine.age=age
+    mine.preferred_gender=preferred_gender
+    db.add(mine)
+    db.commit()
+    flash(request, "Profile updated successfully! ")
+
+    return RedirectResponse(
+        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+    )

@@ -106,6 +106,14 @@
                 </a>
             </li>
 
+
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/daily_picks' }}" href="/daily_picks">
+                    <span > 🌟 </span>
+                    Daily Picks
+                </a>
+            </li>
+
              <li class="nav-item">
                 <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/liked_by' }}" href="/liked_by">
                     <span > &#x1F60F; </span>
@@ -128,7 +136,7 @@
             </li>
 
              <li class="nav-item">
-                <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/profile' }}" href="/profile">
+                <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/my_profile' }}" href="/my_profile">
                     <span > &#x1F525 </span>
                     Profile Info
                 </a>

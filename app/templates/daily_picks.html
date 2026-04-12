@@ -132,8 +132,10 @@
 
 <body class="{% if mine.gender == 'female' %}theme-female{% elif mine.gender == 'male' %}theme-male{% endif %}">
 
-<h3 class="mb-4">Profiles who liked you ♥</h3>
+<h3 class="mb-4">Daily Picks For You 🌟</h3>
+<p class="text-muted">These are your top recommended matches for today.</p>
 
+{% if profiles %}
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
     {% for p in profiles %}
     
@@ -157,21 +159,24 @@
                 <div class="d-flex align-items-baseline gap-2 mb-2">
                      <span class="profile-name">{{p.username}}</span>
                      <span class="profile-age text-muted">{{p.age}}</span>
+
+                     {% if p.is_verified %}
+                        <span style="color:green;">✔ Verified</span>
+                     {% endif %}
                      <!--report button-->
                      <form method="POST" action="#" class="ms-auto">
                          <button type="submit" class="btn-report">⚑</button>
                      </form>
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>
-                <!-- <a href="/profile/{{p.id}}" class="btn btn-light w-100 mt-2">View Profile</a> -->
-                <!-- <div class="d-flex gap-2">
-                    <form method="POST" action="#" class="flex-fill">
+                <div class="d-flex gap-2">
+                    <form method="POST" action="/dislike/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
                     <form method="POST" action="/like/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-like w-100">♥</button>
                     </form>
-                </div> -->
+                </div>
             </div>
         </div>
     </div>
@@ -179,11 +184,16 @@
     {% endfor %}
 </div>
 
-{% if profiles|length == 0 %}
-    <p class="text-muted">No one has liked your profile yet</p>
+{% else %}
+    <p class="text-muted">No daily picks available right now.</p>
 {% endif %}
 
 
+{% if completed %}
+     <div class="alert alert-success">
+        🎉 You've completed today's Daily Picks! Come back tomorrow for more.
+    </div>
+{% endif %}
 </body>
 
 {% endblock %}
