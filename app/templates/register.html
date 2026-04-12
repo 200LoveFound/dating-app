@@ -13,7 +13,7 @@
 
     body {
         background: linear-gradient(135deg, #1a0a0f, #3d1a2e, #6e2d4a);
-        overflow: hidden;
+        
     }
 
     .login-container {
@@ -59,6 +59,143 @@
     background-color: #16213e;
     border-color: #16213e;
 
+}
+
+
+
+
+
+@media (max-width: 768px) {
+    .desktop-register { display: none; }
+    .mobile-register { display: flex; }
+}
+
+.register-card {
+    background: white;
+    border-radius: 1.25rem;
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem;
+}
+
+.step-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+.step-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.step-dot.active   { background: #6e2d4a; color: white; }
+.step-dot.done     { background: #6e2d4a; color: white; }
+.step-dot.inactive { background: #f0e6ec; color: #9e6080; }
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    border-radius: 1px;
+}
+.step-line.done     { background: #6e2d4a; }
+.step-line.inactive { background: #f0e6ec; }
+
+.step-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+.step-label { font-size: 11px; color: #9e6080; }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.register-card h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a0a0f;
+    margin-bottom: 4px;
+}
+
+.register-card .subtitle {
+    font-size: 13px;
+    color: #9e6080;
+    margin-bottom: 1.5rem;
+}
+
+.field { margin-bottom: 1rem; }
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #3d1a2e;
+    margin-bottom: 5px;
+}
+
+.field input, .field select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e8d5de;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1a0a0f;
+    outline: none;
+    background: white;
+}
+
+.field input:focus, .field select:focus {
+    border-color: #6e2d4a;
+    box-shadow: 0 0 0 3px rgba(110,45,74,0.1);
+}
+
+.btn-register {
+    width: 100%;
+    padding: 11px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    margin-top: 0.5rem;
+}
+
+.btn-register.primary   { background: #6e2d4a; color: white; }
+.btn-register.secondary { background: #f0e6ec; color: #6e2d4a; margin-top: 8px; }
+
+.login-link {
+    text-align: center;
+    font-size: 13px;
+    color: #9e6080;
+    margin-top: 1rem;
+}
+.login-link a { color: #6e2d4a; font-weight: 500; text-decoration: none; }
+
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.mobile-register {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #1a0a0f, #3d1a2e, #6e2d4a);
 }
 
 </style>
@@ -124,6 +261,7 @@
 
 -->
 
+<div class="desktop-register">
 <div class="container login-container d-flex align-items-center justify-content-center">
 
     <form id="signUpForm" method="POST" action="/register">
@@ -137,7 +275,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Username</label>
-                    <input type="text" class="form-control" name="username" required>
+                    <input type="text" class="form-control" name="username"  placeholder="e.g. Alice_22" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Email</label>
@@ -209,6 +347,111 @@
         alert(params.get('error'));
     }
 </script>
+
+</div>
+
+<div class="mobile-register">
+    <form method="POST" action="/register">
+    <div class="register-card">
+
+        <div class="step-indicator">
+            <div class="step-dot active" id="dot1">1</div>
+            <div class="step-line inactive" id="line1"></div>
+            <div class="step-dot inactive" id="dot2">2</div>
+        </div>
+        <div class="step-labels">
+            <span class="step-label">Account</span>
+            <span class="step-label">Profile</span>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="panel active" id="step1">
+            <h2>Create your account</h2>
+            <p class="subtitle">Step 1 of 2 — basic info</p>
+            <div class="field">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="e.g. Alice_22" required>
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="email"  required>
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" name="password"  required>
+            </div>
+            <button type="button" class="btn-register primary" onclick="goToStep2()">Continue →</button>
+            <p class="login-link">Already have an account? <a href="{{ url_for('login_view') }}">Log in</a></p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="panel" id="step2">
+            <h2>Your profile</h2>
+            <p class="subtitle">Step 2 of 2 — tell us about yourself</p>
+            <div class="two-col">
+                <div class="field">
+                    <label>Age</label>
+                    <input type="number" name="age"  required>
+                </div>
+                <div class="field">
+                    <label>Birthday</label>
+                    <input type="date" name="birthday" max="{{ today }}" required>
+                </div>
+            </div>
+            <div class="field">
+                <label>Gender</label>
+                <select name="gender" required>
+                    <option value="">Select...</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Preference</label>
+                <select name="preference" required>
+                    <option value="">Select...</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="any">Any</option>
+                </select>
+            </div>
+            {% for message in get_flashed_messages(request) %}
+            <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
+            {% endfor %}
+            <button type="submit" class="btn-register primary">Create account</button>
+            <button type="button" class="btn-register secondary" onclick="goToStep1()">← Back</button>
+        </div>
+
+    </div>
+</form>
+
+<script>
+    function goToStep2() {
+        const username = document.querySelector('#step1 input[name="username"]').value;
+        const email = document.querySelector('#step1 input[name="email"]').value;
+        const password = document.querySelector('#step1 input[name="password"]').value;
+        if (!username || !email || !password) {
+            alert('Please fill in all fields before continuing.');
+            return;
+        }
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+        document.getElementById('dot1').classList.replace('active', 'done');
+        document.getElementById('dot1').textContent = '✓';
+        document.getElementById('line1').classList.replace('inactive', 'done');
+        document.getElementById('dot2').classList.replace('inactive', 'active');
+    }
+
+    function goToStep1() {
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step1').classList.add('active');
+        document.getElementById('dot1').classList.replace('done', 'active');
+        document.getElementById('dot1').textContent = '1';
+        document.getElementById('line1').classList.replace('done', 'inactive');
+        document.getElementById('dot2').classList.replace('active', 'inactive');
+    }
+</script>
+</div>
 
 
 {% endblock %}

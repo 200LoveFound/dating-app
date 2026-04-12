@@ -53,6 +53,8 @@
     max-width: 300px;
     flex-shrink: 0; 
     margin: 0 auto; 
+    height: 100%;
+    
 }
 
 .profile-card-img {
@@ -129,6 +131,22 @@
 #scrollTop:hover {
     background: rgba(255, 255, 255, 0.8);
 }
+
+.badge-verified, .badge-liked {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 99px;
+}
+.badge-verified { background: #E6F1FB; color: #185FA5; }
+.badge-liked    { background: #FBEAF0; color: #993556; }
+
+
+
+
 </style>
 {% endblock %}
 
@@ -184,10 +202,25 @@
                      </form>
 
                 </div>
+                <div class="d-flex gap-1 flex-wrap mb-2">
+                {% if p.is_verified %}
+                <span class="badge-verified">
+                  <span class="material-icons" style="font-size:13px;">verified</span>
+                     Verified
+                  </span>
+                {% endif %}
+               {% if p in liked_by %}
+                    <span class="badge-liked">
+                    <span class="material-icons" style="font-size:13px;">favorite</span>
+                    Liked you
+                </span>
+                {% endif %}
+                </div>
+
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
                      <!--dislike and like-->
-                    <form method="POST" action="/unlike/{{p.id}}" class="flex-fill">
+                    <form method="POST" action="/dislike/{{p.id}}" class="flex-fill">
                         <button type="submit" class="btn btn-dislike w-100">✕</button>
                     </form>
                     <form method="POST" action="/like/{{p.id}}" class="flex-fill">
@@ -217,6 +250,22 @@
                      </form>
 
                 </div>
+
+                <div class="d-flex gap-1 flex-wrap mb-2">
+                {% if p.is_verified %}
+                <span class="badge-verified">
+                  <span class="material-icons" style="font-size:13px;">verified</span>
+                     Verified
+                  </span>
+                {% endif %}
+               {% if p in liked_by %}
+                    <span class="badge-liked">
+                    <span class="material-icons" style="font-size:13px;">
+                    Liked you
+                </span>
+                {% endif %}
+                </div>
+
                 <p class="profile-bio text-muted">{{p.bio}}</p>
                 <div class="d-flex gap-2">
                     <!--dislike and like-->
@@ -242,11 +291,12 @@
 </body>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     if (window.innerWidth <= 768) {
-        const cards = document.querySelectorAll('.profile-card');
+        const cards = document.querySelectorAll('.col');
 
-        cards.forEach(card => {
+        cards.forEach(col => {
+            const card = col.querySelector('.profile-card');
             let startX = 0;
             let currentX = 0;
 
@@ -257,10 +307,8 @@
             card.addEventListener('touchmove', (e) => {
                 currentX = e.touches[0].clientX;
                 const diff = currentX - startX;
-
                 card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
                 card.style.transition = 'none';
-
                 if (diff > 0) {
                     card.style.boxShadow = `0 0 20px rgba(93, 202, 165, ${Math.min(diff / 100, 0.8)})`;
                 } else {

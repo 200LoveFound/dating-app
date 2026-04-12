@@ -181,6 +181,12 @@ document.getElementById("menu-toggle").addEventListener("click", function () {
     document.getElementById("sidebar").classList.toggle("collapsed");
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.add('collapsed');
+    }
+});
+
 document.addEventListener('click', function(e) {
     const sidebar = document.getElementById('sidebar');
     const toggle = document.getElementById('menu-toggle');

@@ -34,6 +34,8 @@ async def user_home_view(
         select(DisLike.disliked_id).where(DisLike.disliker_id == current_profile.id)
     ).all()
 
+    #get the ids of those crushing on you
+    liked_by=db.exec(select(Profile).join(Like, Like.liker_id==Profile.id).where(Like.liked_id==current_profile.id)).all()
    
 
     #get the list of ids for the profiles that this user has reported
@@ -59,7 +61,8 @@ async def user_home_view(
         context={
             "user": user,
             "current_profile" : current_profile,
-            "profiles":profiles
+            "profiles":profiles,
+            "liked_by" : liked_by
         }
     )
 
