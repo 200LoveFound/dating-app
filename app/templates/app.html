@@ -294,11 +294,29 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    if (window.innerWidth <= 768) {
-        const cards = document.querySelectorAll('.col');
 
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.add('collapsed');
+    }
+
+    if (window.innerWidth <= 768) {
+        document.querySelectorAll('form[action*="/unlike/"], form[action*="/dislike/"]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const col = this.closest('.col');
+                if (col) {
+                    col.style.transition = 'opacity 0.3s ease';
+                    col.style.opacity = '0';
+                    fetch(this.action, { method: 'POST', credentials: 'same-origin' })
+                        .then(() => setTimeout(() => col.remove(), 300));
+                }
+            });
+        });
+
+        const cards = document.querySelectorAll('.col');
         cards.forEach(col => {
             const card = col.querySelector('.profile-card');
+            if (!card) return;
             let startX = 0;
             let currentX = 0;
 
@@ -324,15 +342,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (diff > 100) {
                     card.style.transform = 'translateX(150%) rotate(20deg)';
-                    setTimeout(() => {
-                        card.closest('.col').querySelector('form[action*="/like/"]').submit();
-                    }, 300);
+                    const form = col.querySelector('form[action*="/like/"]');
+                    fetch(form.action, { method: 'POST', credentials: 'same-origin' })
+                        .then(() => setTimeout(() => col.remove(), 300));
 
                 } else if (diff < -100) {
                     card.style.transform = 'translateX(-150%) rotate(-20deg)';
-                    setTimeout(() => {
-                        card.closest('.col').querySelector('form[action*="/dislike/"]').submit();
-                    }, 300);
+                    const form = col.querySelector('form[action*="/dislike/"]');
+                    fetch(form.action, { method: 'POST', credentials: 'same-origin' })
+                        .then(() => setTimeout(() => col.remove(), 300));
 
                 } else {
                     card.style.transform = '';

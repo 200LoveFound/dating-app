@@ -128,6 +128,8 @@
 </style>
 {% endblock %}
 
+
+
 {% block subpage_content %}
 
 <body class="{% if mine.gender == 'female' %}theme-female{% elif mine.gender == 'male' %}theme-male{% endif %}">
@@ -184,5 +186,37 @@
 {% endif %}
 
 </body>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.add('collapsed');
+    }
+
+    if (window.innerWidth <= 768) {
+        document.querySelectorAll('form[action*="/unlike/"]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const col = this.closest('.col');
+                if (col) {
+                    col.style.transition = 'opacity 0.3s ease';
+                    col.style.opacity = '0';
+                    fetch(this.action, { method: 'POST', credentials: 'same-origin' })
+                        .then(() => {
+                            setTimeout(() => {
+                               col.remove();
+                                    if (document.querySelectorAll('.col').length === 0) {
+                                     document.querySelector('.row').innerHTML = '<p class="text-muted ps-4">You haven\'t liked anyone yet</p>';
+                      }
+
+
+                }, 300);
+                        });
+                }
+            });
+        });
+    }
+});
+</script>
 
 {% endblock %}

@@ -63,13 +63,6 @@
 
 
 
-
-
-@media (max-width: 768px) {
-    .desktop-register { display: none; }
-    .mobile-register { display: flex; }
-}
-
 .register-card {
     background: white;
     border-radius: 1.25rem;
@@ -196,6 +189,33 @@
     margin: 0;
     padding: 1.5rem;
     background: linear-gradient(135deg, #1a0a0f, #3d1a2e, #6e2d4a);
+}
+
+
+
+@media (max-width: 760px) {
+    .desktop-register { display: none; }
+    .mobile-register { display: flex; }
+}
+
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .desktop-register { display: none; }
+    .mobile-register { display: flex; }
+    .register-card { 
+        max-width: 100%;
+        width: 725px;
+    }
+}
+
+
+@media (min-width: 1025px) and (max-width: 1366px) {
+    .desktop-register { display: none; }
+    .mobile-register { display: flex; }
+    .register-card {
+        max-width: 100%;
+        width: 60%;
+    }
 }
 
 </style>

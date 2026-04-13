@@ -43,6 +43,8 @@
     align-items: center;
 }
 
+
+
 .profile-photo img {
     width: 100%;
     height: 100%;
@@ -93,7 +95,7 @@
     border: 1px solid rgba(93, 202, 165, 0.8);
     font-weight: 600;
     border-radius: 0.9rem;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
 }
 
 .btn-edit:hover {
@@ -105,7 +107,7 @@
     border: 1px solid rgba(255, 255, 255, 0.75);
     font-weight: 600;
     border-radius: 0.9rem;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem;
 }
 
 .btn-back:hover {
@@ -169,23 +171,20 @@
 <body class="{% if mine.gender == 'female' %}theme-female{% elif mine.gender == 'male' %}theme-male{% endif %}">
 
 <div class="profile-dashboard">
+    <div class="row g-4">
 
-    
-    <div class="profile-hero">
+        
+        <div class="col-12 col-md-6">
+            <div class="profile-hero flex-column text-center">
+                <div class="profile-photo mx-auto">
+                    {% if mine.picture1 %}
+                        <img src="{{ mine.picture1 }}" alt="Profile Picture">
+                    {% else %}
+                        <div class="profile-initials">{{ mine.username[:2].upper() }}</div>
+                    {% endif %}
+                </div>
 
-        <div class="profile-photo">
-            {% if mine.picture1 %}
-                <img src="{{ mine.picture1 }}" alt="Profile Picture">
-            {% else %}
-                <div class="profile-initials">{{ mine.username[:2].upper() }}</div>
-            {% endif %}
-        </div>
-
-        <div class="profile-main">
-            <h2>{{ mine.username }} <span class="text-muted" style="font-size: 16px;">({{ mine.age }})</span></h2>
-
-            <p><strong>Gender:</strong> {{ mine.gender }}</p>
-            <p><strong>Preferred Match:</strong> {{ mine.preferred_gender }}</p>
+                <div class="profile-main mt-3">
 
             {% if mine.is_verified %}
                 <span class="profile-badge badge-verified">✔ Verified</span>
@@ -202,31 +201,43 @@
             </div>
         </div>
 
-    </div>
+       
+        <div class="col-12 col-md-6">
+            <div class="section-box profile-details">
+                <h5>📋 Profile Details</h5>
 
-    <div>
-        <div class="section-box profile-details">
-            <h5>📋 Profile Details</h5>
+                {% if mine.bio %}
+                    <p>{{ mine.bio }}</p>
+                {% else %}
+                    <span class="text-muted">No bio added yet. Click edit profile to add one!</span>
+                {% endif %}
 
-            {% if mine.bio %}
-                {{ mine.bio }}
-            {% else %}
-                <span class="text-muted">No bio added yet. Click edit profile to add one!</span>
-            {% endif %}
-
-            <p><strong>Username:</strong> {{ mine.username }}</p>
-            <p><strong>Age:</strong> {{ mine.age }}</p>
-            <p><strong>Gender:</strong> {{ mine.gender }}</p>
-            <p><strong>Preferred Gender:</strong> {{ mine.preferred_gender }}</p>
-
-            {% if mine.birthday %}
-                <p><strong>Birthday:</strong> {{ mine.birthday }}</p>
-            {% endif %}
-
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Username</span>
+                    <span style="font-weight: 500;">{{ mine.username }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Age</span>
+                    <span style="font-weight: 500;">{{ mine.age }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Gender</span>
+                    <span style="font-weight: 500;">{{ mine.gender }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Preferred Gender</span>
+                    <span style="font-weight: 500;">{{ mine.preferred_gender }}</span>
+                </div>
+                {% if mine.birthday %}
+                <div class="d-flex justify-content-between py-2">
+                    <span class="text-muted">Birthday</span>
+                    <span style="font-weight: 500;">{{ mine.birthday.strftime('%B %d, %Y') }}</span>
+                </div>
+                {% endif %}
+            </div>
         </div>
 
     </div>
-
 </div>
 
 </body>
