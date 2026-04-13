@@ -17,5 +17,8 @@ class Settings(BaseSettings):
     db_additional_overflow:int=10
     db_pool_timeout:int=10
     db_pool_recycle:int=10
+    api_key: str
+    base_url: str
+    model: str
     
     model_config = SettingsConfigDict(env_file=".env")

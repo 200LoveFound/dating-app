@@ -112,6 +112,18 @@
     background: rgba(255, 255, 255, 0.9);
 }
 
+.btn-verify {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    border-radius: 0.9rem;
+    padding: 0.75rem 1rem;
+}
+
+.btn-verify:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
 
 #sidebar {
     background: rgba(255, 255, 255, 0.3);
@@ -178,10 +190,13 @@
             {% if mine.is_verified %}
                 <span class="profile-badge badge-verified">✔ Verified</span>
             {% else %}
-                <span class="profile-badge badge-notverified">Not Verified</span>
+                <span class="profile-badge badge-notverified">Not Verified</span> 
             {% endif %}
 
             <div class="profile-actions">
+                {% if not mine.is_verified %}
+                <a href="/verify" class="btn btn-verify w-100">✔ Verify Account</a>
+                {% endif%}
                 <a href="/my_profile/edit" class="btn btn-edit w-100">✏ Edit Profile</a>
                 <a href="/app" class="btn btn-back w-100">⬅ Back to Browse</a>
             </div>

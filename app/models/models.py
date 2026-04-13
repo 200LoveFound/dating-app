@@ -1,6 +1,6 @@
 from sqlmodel import *
-from typing import Optional
-from pydantic import EmailStr
+from typing import Optional, Dict
+from pydantic import EmailStr, BaseModel
 from app.dependencies import session
 from app.models.user import UserBase, User
 from datetime import datetime, date, timedelta
@@ -87,12 +87,25 @@ class DisLike(SQLModel, table=True):
     disliked_id: int = Field(foreign_key="profile.id")
     
 
-
-
-
 # to generate daily picks for a user based on prefered gender, simialrities in age, and people who alr liked you
 class DailyPick(SQLModel, table=True):
     id: Optional[int]=Field(default=None, primary_key=True)
     profile_id: int=Field(foreign_key="profile.id")    #for the user who is going to receieve the daily picks
     suggested_profile_id: int=Field(foreign_key="profile.id")   #who the daily picks could include
     date_generated: date=Field(default_factory=date.today)   
+
+challenge_store: Dict[str, str] = {}
+
+class ChallengeVerifyRequest(BaseModel):
+    user_id: str
+    image: str
+
+class Message(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    match_id: int = Field(foreign_key="match.id")
+    sender_profile_id: int = Field(foreign_key="profile.id")
+    content: str
+    sent_at: datetime = Field(default_factory=datetime.now)
+
+class AISuggestRequest(BaseModel):
+    match_id: int

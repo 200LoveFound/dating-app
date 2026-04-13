@@ -20,21 +20,68 @@ body{
     max-height: 420px;
     overflow-y: auto;
     border: 1px solid rgba(255,255,255,0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
 }
 
-.chat-message {
-    padding: 0.65rem 0.9rem;
-    border-radius: 0.9rem;
-    background: #ffffff;
-    margin-bottom: 0.75rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+.bubble-row {
+    display: flex;
+    align-items: flex-end;
+}
+.bubble-row.mine   { justify-content: flex-end; }
+.bubble-row.theirs { justify-content: flex-start; }
+
+.bubble {
+    max-width: 65%;
+    padding: 0.6rem 0.9rem;
+    border-radius: 1.1rem;
     word-break: break-word;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    display: inline-block;
+    min-width: 75px;
+}
+.bubble.mine {
+    background: #0F6E56;
+    color: #fff;
+    border-bottom-right-radius: 0.2rem;
+}
+.bubble.theirs {
+    background: #ffffff;
+    color: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    border-bottom-left-radius: 0.2rem;
+}
+
+.bubble-name {
+    font-size: 0.72rem;
+    color: #888;
+    margin-bottom: 2px;
+    padding-left: 4px;
+}
+
+.bubble-time {
+    font-size: 0.68rem;
+    color: #bbb;
+    margin-top: 2px;
+}
+.bubble-row.mine   .bubble-time { text-align: right; }
+.bubble-row.theirs .bubble-time { text-align: left; }
+
+.system-msg {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #aaa;
+    margin: 4px 0;
 }
 
 .chat-form {
     display: flex;
     gap: 0.75rem;
     margin-top: 1rem;
+    align-items: center;
 }
 
 .chat-input {
@@ -51,6 +98,90 @@ body{
     background: #E1F5EE;
     color: #0F6E56;
     border: 0.5px solid #5DCAA5;
+    cursor: pointer;
+}
+
+.ai-bulb-btn {
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    background: #fefce8;
+    border: 0.5px solid #fde047;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.ai-bulb-btn:hover    { background: #fef08a; }
+.ai-bulb-btn:disabled { background: #eee; cursor: not-allowed; }
+
+/* Popup overlay */
+.ai-popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+}
+.ai-popup-overlay.open {
+    display: flex;
+}
+
+.ai-popup {
+    background: #fff;
+    border-radius: 1.2rem;
+    padding: 1.5rem;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+.ai-popup h6 {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1rem;
+}
+
+.ai-popup-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #aaa;
+}
+.ai-popup-close:hover { color: #333; }
+
+.suggestion-chip {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin: 0.35rem 0;
+    padding: 0.65rem 1rem;
+    background: #f0eeff;
+    color: #4f46e5;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    border: 0.5px solid #a5b4fc;
+    transition: background 0.15s;
+}
+.suggestion-chip:hover { background: #e0dbff; }
+
+.ai-loading {
+    text-align: center;
+    color: #aaa;
+    font-size: 0.9rem;
+    padding: 1rem 0;
 }
 </style>
 {% endblock %}
@@ -61,45 +192,156 @@ body{
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h3 class="mb-1">Chat with {{ other_profile.username }}</h3>
-                <div class="text-muted small">
-                    Match ID #{{ match.id }}
-                </div>
+                <div class="text-muted small">Match ID #{{ match.id }}</div>
             </div>
             <a href="/matches" class="btn btn-outline-dark">Back to Matches</a>
         </div>
 
-        <div id="messages" class="chat-box"></div>
+        <div id="messages" class="chat-box">
+            {% for msg in previous_messages %}
+                {% if msg.sender_profile_id == mine.id %}
+                    <div class="bubble-row mine">
+                        <div>
+                            <div class="bubble mine">{{ msg.content }}</div>
+                            <div class="bubble-time">{{ msg.sent_at.strftime('%H:%M') }}</div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="bubble-row theirs">
+                        <div>
+                            <div class="bubble-name">{{ other_profile.username }}</div>
+                            <div class="bubble theirs">{{ msg.content }}</div>
+                            <div class="bubble-time">{{ msg.sent_at.strftime('%H:%M') }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
 
         <form class="chat-form" onsubmit="sendMessage(event)">
             <input type="text" id="messageText" class="chat-input" autocomplete="off" placeholder="Type your message here!"/>
-            <button class="chat-send-btn">Send</button>
+            <button class="chat-send-btn" type="submit">Send</button>
+            <button class="ai-bulb-btn" type="button" id="btn-ai" title="Get AI suggestion" onclick="getAISuggestions()">💡</button>
         </form>
     </div>
 </div>
 
+<!-- AI Suggestion Popup -->
+<div class="ai-popup-overlay" id="ai-overlay">
+    <div class="ai-popup">
+        <button class="ai-popup-close" onclick="closePopup()">✕</button>
+        <h5 style="margin-bottom: 0.25rem;">💡 AI Suggestions</h5>
+        <h6>Click a suggestion to use it</h6>
+        <div id="ai-popup-body">
+            <div class="ai-loading">Thinking...</div>
+        </div>
+    </div>
+</div>
+
 <script>
-    const matchId = "{{ match.id }}";
-    const myProfileId = "{{ mine.id }}";
+    const matchId     = "{{ match.id }}";
+    const myProfileId = parseInt("{{ mine.id }}");
+    const messagesBox = document.getElementById("messages");
+
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+
     const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${matchId}/${myProfileId}`);
 
     ws.onmessage = function(event) {
-        const messages = document.getElementById("messages");
-        const message = document.createElement("div");
-        message.className = "chat-message";
-        message.textContent = event.data;
-        messages.appendChild(message);
-        messages.scrollTop = messages.scrollHeight;
+        let data;
+        try { data = JSON.parse(event.data); } catch { return; }
+        if (data.type === "system") {
+            appendSystem(data.text);
+        } else if (data.type === "message") {
+            const isMine = data.sender_id === myProfileId;
+            appendBubble(data.text, data.sender, isMine);
+        }
     };
+
+    ws.onclose = function() {
+        appendSystem("Disconnected from chat.");
+    };
+
+    function appendBubble(text, sender, isMine) {
+        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const row = document.createElement("div");
+        row.className = `bubble-row ${isMine ? "mine" : "theirs"}`;
+        row.innerHTML = `
+            <div>
+                ${!isMine ? `<div class="bubble-name">${sender}</div>` : ""}
+                <div class="bubble ${isMine ? "mine" : "theirs"}">${escapeHtml(text)}</div>
+                <div class="bubble-time">${now}</div>
+            </div>`;
+        messagesBox.appendChild(row);
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    function appendSystem(text) {
+        const div = document.createElement("div");
+        div.className = "system-msg";
+        div.textContent = text;
+        messagesBox.appendChild(div);
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
 
     function sendMessage(event) {
         event.preventDefault();
         const input = document.getElementById("messageText");
         const text = input.value.trim();
-
-        if (text === "") return;
-
+        if (!text || ws.readyState !== WebSocket.OPEN) return;
         ws.send(text);
         input.value = "";
+    }
+
+    function closePopup() {
+        document.getElementById("ai-overlay").classList.remove("open");
+    }
+
+    // Close popup when clicking outside
+    document.getElementById("ai-overlay").addEventListener("click", function(e) {
+        if (e.target === this) closePopup();
+    });
+
+    async function getAISuggestions() {
+        const btn = document.getElementById("btn-ai");
+        const body = document.getElementById("ai-popup-body");
+
+        btn.disabled = true;
+        body.innerHTML = '<div class="ai-loading">💭 Thinking...</div>';
+        document.getElementById("ai-overlay").classList.add("open");
+
+        try {
+            const res = await fetch("/api/ai-suggest", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ match_id: parseInt(matchId) })
+            });
+
+            if (!res.ok) throw new Error("Failed to get suggestions");
+            const data = await res.json();
+
+            body.innerHTML = "";
+            data.suggestions.forEach(text => {
+                const chip = document.createElement("button");
+                chip.className = "suggestion-chip";
+                chip.textContent = text;
+                chip.onclick = () => {
+                    document.getElementById("messageText").value = text;
+                    closePopup();
+                    document.getElementById("messageText").focus();
+                };
+                body.appendChild(chip);
+            });
+
+        } catch (err) {
+            body.innerHTML = `<div class="ai-loading" style="color:#e55;">Could not load suggestions. Try again.</div>`;
+        } finally {
+            btn.disabled = false;
+        }
     }
 </script>
 {% endblock %}

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Your Account</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+
+    .back-btn {
+        display: inline-block; margin-bottom: 20px;
+        padding: 8px 16px; background: #e2e8f0;
+        border-radius: 8px; text-decoration: none;
+        color: #334155; font-size: 14px;
+    }
+    .back-btn:hover { background: #cbd5e1; 
+    
+    }
+
+    button {
+        padding: 10px 20px; margin: 8px 0; cursor: pointer;
+        border-radius: 8px; border: none; background: #4f46e5;
+        color: white; font-size: 15px;
+    }
+    button:disabled { 
+        background: #aaa; 
+        cursor: not-allowed; 
+    }
+
+    #status {
+        margin-top: 16px; font-size: 15px; 
+        padding: 12px;
+        border-radius: 8px; 
+        background: #f1f5f9;
+    }
+    .result-pass { 
+        color: green; 
+        font-weight: bold; 
+        background: #f0fdf4 !important; 
+    }
+
+    .result-fail { 
+        color: red; 
+        font-weight: bold; 
+        background: #fef2f2 !important; 
+    }
+
+    #challenge-box {
+        font-size: 20px; font-weight: bold; text-align: center;
+        color: #4f46e5; background: #eef2ff;
+        padding: 20px; border-radius: 12px; margin: 12px 0;
+        display: none;
+    }
+
+    #camera-feed {
+        width: 100%; 
+        border-radius: 12px; 
+        margin-top: 12px;
+        display: none; 
+        transform: scaleX(-1);
+    }
+
+    #capture-preview { 
+        width: 200px; 
+        border-radius: 8px; 
+        margin-top: 8px; 
+        display: none; 
+    }
+
+    #countdown {
+        font-size: 64px; 
+        font-weight: bold; 
+        text-align: center;
+        color: #4f46e5; 
+        display: none; 
+        margin: 10px 0;
+    }
+
+    .already-verified {
+        text-align: center; 
+        padding: 30px;
+        background: #f0fdf4; 
+        border-radius: 12px; 
+        color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="/my_profile" class="back-btn">← Back to My Profile</a>
+
+  <h2>Account Verification</h2>
+  <p>Hello, <strong>{{ mine.username }}</strong>. Complete the liveness challenge below to verify your account.</p>
+
+  {% if mine.is_verified %}
+    <div class="already-verified">
+      <h3>✅ Your account is already verified!</h3>
+      <p>No further action is needed.</p>
+    </div>
+  {% else %}
+    <button id="btn-get-challenge">Get My Challenge</button>
+    <div id="challenge-box"></div>
+    <div id="countdown"></div>
+    <video id="camera-feed" autoplay muted playsinline></video>
+    <button id="btn-perform" style="display:none">I'm Ready — Start Capture</button>
+    <br>
+    <img id="capture-preview" />
+    <div id="status">Click "Get My Challenge" to begin.</div>
+  {% endif %}
+
+<script>
+  const USER_ID = "{{ user.id }}";  
+  let currentStream = null;
+  let currentChallenge = null;
+
+  function setStatus(msg, cls = '') {
+    const el = document.getElementById('status');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = cls;
+  }
+
+  function captureFrame(video) {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0);
+    return canvas.toDataURL('image/jpeg', 0.95);
+  }
+
+  async function countdown(seconds) {
+    const el = document.getElementById('countdown');
+    el.style.display = 'block';
+    for (let i = seconds; i > 0; i--) {
+      el.textContent = i;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+    el.style.display = 'none';
+  }
+
+  const btnChallenge = document.getElementById('btn-get-challenge');
+  const btnPerform = document.getElementById('btn-perform');
+
+  if (btnChallenge) {
+    btnChallenge.addEventListener('click', async () => {
+      setStatus('Contacting server...');
+      try {
+        const res = await fetch(`/api/get-challenge?user_id=${USER_ID}`);
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const data = await res.json();
+        currentChallenge = data;
+
+        const box = document.getElementById('challenge-box');
+        box.style.display = 'block';
+        box.textContent = data.instruction;
+
+        setStatus('Requesting camera access...');
+        currentStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+
+        const video = document.getElementById('camera-feed');
+        video.style.display = 'block';
+        video.srcObject = currentStream;
+        await video.play();
+
+        btnChallenge.style.display = 'none';
+        btnPerform.style.display = 'inline-block';
+        setStatus(`Ready! Now: ${data.instruction}`);
+
+      } catch (err) {
+        setStatus('Error: ' + err.message, 'result-fail');
+      }
+    });
+  }
+
+  if (btnPerform) {
+    btnPerform.addEventListener('click', async () => {
+      btnPerform.disabled = true;
+      const video = document.getElementById('camera-feed');
+
+      setStatus(`Perform now: ${currentChallenge.instruction}`);
+      await countdown(3);
+
+      setStatus('Capturing...');
+      const imageBase64 = captureFrame(video);
+
+      const preview = document.getElementById('capture-preview');
+      preview.src = imageBase64;
+      preview.style.display = 'block';
+
+      currentStream.getTracks().forEach(t => t.stop());
+      video.style.display = 'none';
+
+      setStatus('Analysing your image...');
+
+      try {
+        const res = await fetch('/api/verify-challenge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: USER_ID, image: imageBase64 })
+        });
+
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const result = await res.json();
+
+        if (result.verified) {
+          setStatus('✅ Account verified! Redirecting...', 'result-pass');
+          setTimeout(() => { window.location.href = '/my_profile'; }, 2000);
+        } else {
+          setStatus(result.message + ' — Try again below.', 'result-fail');
+          document.getElementById('challenge-box').style.display = 'none';
+          const retryBtn = document.createElement('button');
+          retryBtn.textContent = 'Try Again';
+          retryBtn.onclick = () => location.reload();
+          document.getElementById('status').after(retryBtn);
+        }
+
+      } catch (err) {
+        setStatus('Error: ' + err.message, 'result-fail');
+        btnPerform.disabled = false;
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

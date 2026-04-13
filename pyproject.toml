@@ -29,6 +29,11 @@ dependencies = [
     "typer",
     "uvicorn[standard]",
     "websockets",
+    "opencv-python",
+    "numpy",
+    "langchain-openai",
+    "langchain-core",
+    "python-dotenv"
 ]
 [project.optional-dependencies]
 dev = [

@@ -111,5 +111,23 @@ def initialize():
             print ("sample_profiles.csv File not found.\n")
 
 
+#Used this to test real - time communication
+# @cli.command()
+# def seed():
+#     with get_cli_session() as db:
+#         # Check what profiles exist first
+#         profiles = db.exec(select(Profile)).all()
+
+#         for p in profiles:
+#             print(f"Profile id={p.id} username={p.username} user_id={p.user_id}")
+
+#         # Create a match between profile id 1 and profile id 2
+#         # Change these IDs to match what gets printed above
+#         match = Match(profile1_id=1, profile2_id=2)
+#         db.add(match)
+#         db.commit()
+#         db.refresh(match)
+#         print(f"Match created! id={match.id}")
+
 if __name__=="__main__":
     cli()

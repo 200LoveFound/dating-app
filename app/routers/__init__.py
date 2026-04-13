@@ -14,7 +14,13 @@ static_files = StaticFiles(directory="app/static")
 router = APIRouter(tags=["Jinja Based Endpoints"], include_in_schema=get_settings().env.lower() in ["dev","development"])
 api_router = APIRouter(tags=["API Endpoints"], prefix="/api")
 
-from . import (index, login, register, stats, admin_home, user_home, users, logout, websocket)
+from . import (index, login, register, stats, admin_home, user_home, users, logout, websocket, verification, chatbot)
 
 from .stats import stats_router
 router.include_router(stats_router)
+
+from .verification import page_router as verification_page_router
+from .verification import api_router as verification_api_router
+
+router.include_router(verification_page_router)
+api_router.include_router(verification_api_router)
