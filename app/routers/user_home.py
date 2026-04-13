@@ -8,6 +8,7 @@ from app.models.models import *
 from sqlmodel import *
 from typing import Annotated
 from app.utilities.flash import *
+from datetime import date
 
 
 @router.get("/app", response_class=HTMLResponse)
@@ -528,6 +529,28 @@ def edit_my_profile_action(request: Request, user: AuthDep, db:SessionDep, usern
     mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
     if not mine:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+    #check age before adding it
+    calculated_age = (date.today() - mine.birthday).days //365
+    if calculated_age != int(age):
+     flash(request, "Your age and birthday do not match! ")
+     return RedirectResponse(
+        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+    )
+     
+    if calculated_age < 18:
+        flash(request, "You must be 18 and older to use this application")
+        return RedirectResponse(
+        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+    )
+      
+    if calculated_age > 100:
+        flash(request, "Please enter a valid age!")
+        return RedirectResponse(
+        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+    )
+      
+    
     mine.username=username
     mine.bio=bio
     mine.age=age

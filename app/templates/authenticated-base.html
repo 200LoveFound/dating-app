@@ -13,6 +13,8 @@
     }
 
     #sidebar {
+        background: transparent;        
+        backdrop-filter: none;         
         min-width: 250px;
         max-width: 250px;
         min-height: 100vh;
@@ -81,7 +83,11 @@
         border-bottom: 1px solid #dee2e6;
     }
 
-   
+   @media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+    }
+}
 
 
 

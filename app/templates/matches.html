@@ -15,10 +15,9 @@
 
 
 #sidebar {
-    background: rgba(255, 255, 255, 0.3);
+    background: transparent;
     backdrop-filter: blur(10px);
     color: #000;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 #sidebar .nav-link {
@@ -120,6 +119,7 @@
     font-size: 18px;
     cursor: pointer;
     color: #72243E;
+    display: none;
 }
 
 #scrollTop:hover {
@@ -179,12 +179,28 @@
     </div>
     
     {% endfor %}
+
+     <!--scroll to top button-->
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" id="scrollTop">↑</button>
 </div>
 
 {% if profiles|length == 0 %}
     <p class="text-muted">No matches have been made yet.</p>
 {% endif %}
 
+</body>
 
+<script>
 
+    const scrollBtn = document.getElementById('scrollTop');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+        scrollBtn.style.display = 'block';
+    } else {
+        scrollBtn.style.display = 'none';
+    }
+});
+
+</script>
 {% endblock %}

@@ -90,16 +90,18 @@
 
 
 .btn-edit {
-    background: rgba(225, 245, 238, 0.9);
-    color: #0F6E56;
-    border: 1px solid rgba(93, 202, 165, 0.8);
+    
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.75);
     font-weight: 600;
     border-radius: 0.9rem;
     padding: 0.5rem 1rem;
+
 }
+   
 
 .btn-edit:hover {
-    background: rgba(201, 240, 228, 0.95);
+    background: rgba(255, 255, 255, 0.9); 
 }
 
 .btn-back {
@@ -128,10 +130,10 @@
 
 
 #sidebar {
-    background: rgba(255, 255, 255, 0.3);
+    background: transparent;
     backdrop-filter: blur(10px);
     color: #000;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
+   
 }
 
 #sidebar .nav-link {
@@ -144,6 +146,15 @@
 #sidebar .nav-link:hover {
     background: rgba(255, 255, 255, 0.7);
     color: #4B1528;
+}
+
+.profile-actions a {
+    margin-top: 0.75rem;
+    
+}
+
+.profile-actions a:hover {
+    background: rgba(255, 255, 255, 0.9); 
 }
 
 
@@ -173,72 +184,71 @@
 <div class="profile-dashboard">
     <div class="row g-4">
 
-        
-        <div class="col-12 col-md-6">
-            <div class="profile-hero flex-column text-center">
-                <div class="profile-photo mx-auto">
-                    {% if mine.picture1 %}
-                        <img src="{{ mine.picture1 }}" alt="Profile Picture">
-                    {% else %}
-                        <div class="profile-initials">{{ mine.username[:2].upper() }}</div>
+    <!-- LEFT SIDE  -->
+    <div class="col-12 col-md-6">
+        <div class="profile-hero flex-column text-center">
+            <div class="profile-photo mx-auto">
+                {% if mine.picture1 %}
+                    <img src="{{ mine.picture1 }}" alt="Profile Picture">
+                {% else %}
+                    <div class="profile-initials">{{ mine.username[:2].upper() }}</div>
+                {% endif %}
+            </div>
+
+            <div class="profile-main mt-3">
+                {% if mine.is_verified %}
+                    <span class="profile-badge badge-verified">✔ Verified</span>
+                {% else %}
+                    <span class="profile-badge badge-notverified">Not Verified</span>
+                {% endif %}
+
+                <div class="profile-actions">
+                    {% if not mine.is_verified %}
+                    <a href="/verify" class="btn btn-verify w-100">✔ Verify Account</a>
                     {% endif %}
+                    <a href="/my_profile/edit" class="btn btn-edit w-100">✏ Edit Profile</a>
+                    <a href="/app" class="btn btn-back w-100">⬅ Back to Browse</a>
                 </div>
+            </div>  
+        </div>  
+    </div>  
+    <!-- RIGHT SIDE -->
+    <div class="col-12 col-md-6">
+        <div class="section-box profile-details">
+            <h5>📋 Profile Details</h5>
 
-                <div class="profile-main mt-3">
-
-            {% if mine.is_verified %}
-                <span class="profile-badge badge-verified">✔ Verified</span>
+            {% if mine.bio %}
+                <p>{{ mine.bio }}</p>
             {% else %}
-                <span class="profile-badge badge-notverified">Not Verified</span> 
+                <span class="text-muted">No bio added yet. Click edit profile to add one!</span>
             {% endif %}
 
-            <div class="profile-actions">
-                {% if not mine.is_verified %}
-                <a href="/verify" class="btn btn-verify w-100">✔ Verify Account</a>
-                {% endif%}
-                <a href="/my_profile/edit" class="btn btn-edit w-100">✏ Edit Profile</a>
-                <a href="/app" class="btn btn-back w-100">⬅ Back to Browse</a>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Username</span>
+                <span style="font-weight: 500;">{{ mine.username }}</span>
             </div>
-        </div>
-
-       
-        <div class="col-12 col-md-6">
-            <div class="section-box profile-details">
-                <h5>📋 Profile Details</h5>
-
-                {% if mine.bio %}
-                    <p>{{ mine.bio }}</p>
-                {% else %}
-                    <span class="text-muted">No bio added yet. Click edit profile to add one!</span>
-                {% endif %}
-
-                <div class="d-flex justify-content-between py-2 border-bottom">
-                    <span class="text-muted">Username</span>
-                    <span style="font-weight: 500;">{{ mine.username }}</span>
-                </div>
-                <div class="d-flex justify-content-between py-2 border-bottom">
-                    <span class="text-muted">Age</span>
-                    <span style="font-weight: 500;">{{ mine.age }}</span>
-                </div>
-                <div class="d-flex justify-content-between py-2 border-bottom">
-                    <span class="text-muted">Gender</span>
-                    <span style="font-weight: 500;">{{ mine.gender }}</span>
-                </div>
-                <div class="d-flex justify-content-between py-2 border-bottom">
-                    <span class="text-muted">Preferred Gender</span>
-                    <span style="font-weight: 500;">{{ mine.preferred_gender }}</span>
-                </div>
-                {% if mine.birthday %}
-                <div class="d-flex justify-content-between py-2">
-                    <span class="text-muted">Birthday</span>
-                    <span style="font-weight: 500;">{{ mine.birthday.strftime('%B %d, %Y') }}</span>
-                </div>
-                {% endif %}
+            <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Age</span>
+                <span style="font-weight: 500;">{{ mine.age }}</span>
             </div>
-        </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Gender</span>
+                <span style="font-weight: 500;">{{ mine.gender }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Preferred Gender</span>
+                <span style="font-weight: 500;">{{ mine.preferred_gender }}</span>
+            </div>
+            {% if mine.birthday %}
+            <div class="d-flex justify-content-between py-2">
+                <span class="text-muted">Birthday</span>
+                <span style="font-weight: 500;">{{ mine.birthday.strftime('%B %d, %Y') }}</span>
+            </div>
+            {% endif %}
+        </div>  
+    </div>  
 
-    </div>
-</div>
+</div> 
 
 </body>
 

@@ -19,10 +19,10 @@
 
 
 #sidebar {
-    background: rgba(255, 255, 255, 0.3);
+    background: transparent;
     backdrop-filter: blur(10px);
     color: #000;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
+  
 }
 
 #sidebar .nav-link {
@@ -126,6 +126,7 @@
     font-size: 18px;
     cursor: pointer;
     color: #72243E;
+    display: none;
 }
 
 #scrollTop:hover {
@@ -144,7 +145,21 @@
 .badge-verified { background: #E6F1FB; color: #185FA5; }
 .badge-liked    { background: #FBEAF0; color: #993556; }
 
-
+.swipe-hint {
+    position: fixed;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 999px;
+    padding: 0.5rem 1.25rem;
+    font-size: 13px;
+    color: #72243E;
+    font-weight: 500;
+    z-index: 999;
+    transition: opacity 0.5s ease;
+}
 
 
 </style>
@@ -295,11 +310,21 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    if (window.innerWidth <= 768) {
-        document.getElementById('sidebar').classList.add('collapsed');
-    }
 
     if (window.innerWidth <= 768) {
+
+         const hint = document.createElement('div');
+    hint.className = 'swipe-hint';
+    hint.textContent = 'Swipe card left to pass and right to like';
+    document.body.appendChild(hint);
+    setTimeout(() => {
+        hint.style.opacity = '0';
+        setTimeout(() => hint.remove(), 500);
+    }, 3000);
+
+    
+
+
         document.querySelectorAll('form[action*="/unlike/"], form[action*="/dislike/"]').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -360,6 +385,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+const scrollBtn = document.getElementById('scrollTop');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+        scrollBtn.style.display = 'block';
+    } else {
+        scrollBtn.style.display = 'none';
+    }
+});
+
 </script>
 
 

@@ -15,10 +15,10 @@
 
 
 #sidebar {
-    background: rgba(255, 255, 255, 0.3);
+    background: transparent;
     backdrop-filter: blur(10px);
     color: #000;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
+
 }
 
 #sidebar .nav-link {
@@ -87,6 +87,25 @@
     border: 0.5px solid #F09595;
 }
 
+#scrollTop {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #72243E;
+}
+
+#scrollTop:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
 .profile-name { font-size: 16px; font-weight: 500; }
 .profile-age  { font-size: 13px; }
 .profile-bio  { font-size: 12px; line-height: 1.5; }
@@ -120,6 +139,7 @@
     font-size: 18px;
     cursor: pointer;
     color: #72243E;
+    display: none;
 }
 
 #scrollTop:hover {
@@ -136,7 +156,7 @@
 
 <h3 class="mb-4">Profiles you liked ♥</h3>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" id="liked-row">
     {% for p in profiles %}
     
 
@@ -179,11 +199,15 @@
     </div>
     
     {% endfor %}
+
+      <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" id="scrollTop">↑</button>
 </div>
 
 {% if profiles|length == 0 %}
     <p class="text-muted">You haven't liked anyone yet</p>
 {% endif %}
+
+
 
 </body>
 
@@ -206,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             setTimeout(() => {
                                col.remove();
                                     if (document.querySelectorAll('.col').length === 0) {
-                                     document.querySelector('.row').innerHTML = '<p class="text-muted ps-4">You haven\'t liked anyone yet</p>';
+                                     document.querySelector('liked-row').innerHTML = '<p class="text-muted ps-4">You haven\'t liked anyone yet</p>';
                       }
 
 
@@ -217,6 +241,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+const scrollBtn = document.getElementById('scrollTop');
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+        scrollBtn.style.display = 'block';
+    } else {
+        scrollBtn.style.display = 'none';
+    }
+});
+
+
 </script>
 
 {% endblock %}
