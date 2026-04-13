@@ -9,6 +9,8 @@ from sqlmodel import *
 from typing import Annotated
 from app.utilities.flash import *
 from datetime import date
+from fastapi import UploadFile, File
+from app.utils import save_upload
 
 
 @router.get("/app", response_class=HTMLResponse)
@@ -524,41 +526,106 @@ def edit_my_profile_view(request: Request, user: AuthDep, db:SessionDep):
     )
 
 
+# @router.post("/my_profile/edit")
+# def edit_my_profile_action(request: Request, user: AuthDep, db:SessionDep, username: Annotated[str, Form()], bio: Annotated[str, Form()], age:Annotated[str, Form()], preferred_gender:Annotated[str, Form()]):
+#     mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+#     if not mine:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+#     #check age before adding it
+#     calculated_age = (date.today() - mine.birthday).days //365
+#     if calculated_age != int(age):
+#      flash(request, "Your age and birthday do not match! ")
+#      return RedirectResponse(
+#         url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+#     )
+     
+#     if calculated_age < 18:
+#         flash(request, "You must be 18 and older to use this application")
+#         return RedirectResponse(
+#         url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+#     )
+      
+#     if calculated_age > 100:
+#         flash(request, "Please enter a valid age!")
+#         return RedirectResponse(
+#         url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+#     )
+      
+    
+#     mine.username=username
+#     mine.bio=bio
+#     mine.age=age
+#     mine.preferred_gender=preferred_gender
+#     db.add(mine)
+#     db.commit()
+#     flash(request, "Profile updated successfully! ")
+
+#     return RedirectResponse(
+#         url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
+#     )
+
 @router.post("/my_profile/edit")
-def edit_my_profile_action(request: Request, user: AuthDep, db:SessionDep, username: Annotated[str, Form()], bio: Annotated[str, Form()], age:Annotated[str, Form()], preferred_gender:Annotated[str, Form()]):
-    mine=db.exec(select(Profile).where(Profile.user_id==user.id)).one_or_none()
+async def edit_my_profile_action(
+    request: Request,
+    user: AuthDep,
+    db: SessionDep,
+    username: Annotated[str, Form()],
+    bio: Annotated[str, Form()],
+    age: Annotated[str, Form()],
+    preferred_gender: Annotated[str, Form()],
+    picture1: UploadFile = File(default=None),
+    picture2: UploadFile = File(default=None),
+    picture3: UploadFile = File(default=None),
+    remove_picture1: Annotated[Optional[str], Form()] = None,
+    remove_picture2: Annotated[Optional[str], Form()] = None,
+    remove_picture3: Annotated[Optional[str], Form()] = None,
+):
+    mine = db.exec(select(Profile).where(Profile.user_id == user.id)).one_or_none()
     if not mine:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
-    
-    #check age before adding it
-    calculated_age = (date.today() - mine.birthday).days //365
+
+    calculated_age = (date.today() - mine.birthday).days // 365
     if calculated_age != int(age):
-     flash(request, "Your age and birthday do not match! ")
-     return RedirectResponse(
-        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
-    )
-     
+        flash(request, "Your age and birthday do not match!")
+        return RedirectResponse(url="/my_profile", status_code=status.HTTP_303_SEE_OTHER)
+
     if calculated_age < 18:
         flash(request, "You must be 18 and older to use this application")
-        return RedirectResponse(
-        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
-    )
-      
+        return RedirectResponse(url="/my_profile", status_code=status.HTTP_303_SEE_OTHER)
+
     if calculated_age > 100:
         flash(request, "Please enter a valid age!")
-        return RedirectResponse(
-        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
-    )
-      
-    
-    mine.username=username
-    mine.bio=bio
-    mine.age=age
-    mine.preferred_gender=preferred_gender
+        return RedirectResponse(url="/my_profile", status_code=status.HTTP_303_SEE_OTHER)
+
+    mine.username = username
+    mine.bio = bio
+    mine.age = age
+    mine.preferred_gender = preferred_gender
+
+    # Handle picture 1
+    if remove_picture1:
+        mine.picture1 = None
+    else:
+        pic1_url = await save_upload(picture1)
+        if pic1_url: mine.picture1 = pic1_url
+
+    # Handle picture 2
+    if remove_picture2:
+        mine.picture2 = None
+    else:
+        pic2_url = await save_upload(picture2)
+        if pic2_url: mine.picture2 = pic2_url
+
+    # Handle picture 3
+    if remove_picture3:
+        mine.picture3 = None
+    else:
+        pic3_url = await save_upload(picture3)
+        if pic3_url: mine.picture3 = pic3_url
+
     db.add(mine)
     db.commit()
-    flash(request, "Profile updated successfully! ")
+    flash(request, "Profile updated successfully!")
 
-    return RedirectResponse(
-        url="/my_profile", status_code=status.HTTP_303_SEE_OTHER
-    )
+    return RedirectResponse(url="/my_profile", status_code=status.HTTP_303_SEE_OTHER)
