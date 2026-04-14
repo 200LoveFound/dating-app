@@ -431,7 +431,7 @@ body{
 
     messagesBox.scrollTop = messagesBox.scrollHeight;
 
-    const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${matchId}/${myProfileId}`);
+    const ws = new WebSocket(`wss://${window.location.host}/ws/chat/${matchId}/${myProfileId}`);
 
     ws.onmessage = function(event) {
         let data;

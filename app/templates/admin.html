@@ -181,7 +181,7 @@ body{
 
                     <div class="d-flex gap-2">
                         <form method="POST" action="/admin/block/{{r.id}}" class="flex-fill">
-                            <button type="submit" class="btn btn-block-user w-100">
+                            <button type="submit" class="btn btn-block-user w-100" onclick="handleBlock(this)">
                                 Block Profile
                             </button>
                         </form>
@@ -203,5 +203,21 @@ body{
     </div>
     {% endif %}
 </div>
+
+<script>
+
+function handleBlock(btn) {
+    const form = btn.closest('form');
+    
+    btn.replaceWith((() => {
+        const span = document.createElement('span');
+        span.textContent = '🚫 Blocked';
+        span.style.cssText = 'color: red; font-weight: 600;';
+        return span;
+    })());
+
+    fetch(form.action, { method: 'POST', credentials: 'same-origin' });
+}
+</script>
 
 {% endblock %}
