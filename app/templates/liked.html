@@ -180,8 +180,9 @@
                      <span class="profile-name">{{p.username}}</span>
                      <span class="profile-age text-muted">{{p.age}}</span>
                      <!--report button-->
-                     <form method="POST" action="#" class="ms-auto">
-                         <button type="submit" class="btn-report">⚑</button>
+                     <form method="GET" action="/report/{{p.id}}" class="ms-auto">
+                        <input type="hidden" name="next" value="/liked"> 
+                        <button type="submit" class="btn-report">⚑</button>
                      </form>
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>

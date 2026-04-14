@@ -158,8 +158,9 @@
                      <span class="profile-name">{{p.profile.username}}</span>
                      <span class="profile-age text-muted">{{p.profile.age}}</span>
                      <!--report button-->
-                     <form method="POST" action="/report/{{p.profile.id}}" class="ms-auto">
-                         <button type="submit" class="btn-report">⚑</button>
+                     <form method="GET" action="/report/{{p.profile.id}}" class="ms-auto">
+                        <input type="hidden" name="next" value="/matches"> 
+                        <button type="submit" class="btn-report">⚑</button>
                      </form>
                 </div>
                 <p class="profile-bio text-muted">{{p.bio}}</p>

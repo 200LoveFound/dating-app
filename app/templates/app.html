@@ -213,7 +213,8 @@
                      <span class="profile-age text-muted">{{p.age}}</span>
                      <!--report button-->
                      <form method="GET" action="/report/{{p.id}}" class="ms-auto">
-                         <button type="submit" class="btn-report">⚑</button>
+                        <input type="hidden" name="next" value="/app"> 
+                        <button type="submit" class="btn-report">⚑</button>
                      </form>
 
                 </div>
@@ -260,7 +261,8 @@
                     <span class="profile-age text-muted">{{p.age}}</span>
                     <!--Report button-->
                     <form method="GET" action="/report/{{p.id}}" class="ms-auto">
-                         <button type="submit" class="btn-report">⚑</button>
+                        <input type="hidden" name="next" value="/app"> 
+                        <button type="submit" class="btn-report">⚑</button>
                      </form>
 
                 </div>

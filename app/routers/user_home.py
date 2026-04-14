@@ -139,8 +139,17 @@ def liked_profiles(request: Request, user: AuthDep, db:SessionDep):
    
 
     
-    liked=db.exec(select(Profile).join(Like, Like.liked_id==Profile.id).where(Like.liker_id==mine.id)).all()
+    # liked=db.exec(select(Profile).join(Like, Like.liked_id==Profile.id).where(Like.liker_id==mine.id)).all()
+    reported_ids = db.exec(
+    select(reportedProfile.profile_id).where(reportedProfile.reported_by == mine.id)
+    ).all()
 
+    q = select(Profile).join(Like, Like.liked_id == Profile.id).where(Like.liker_id == mine.id)
+
+    if reported_ids:
+        q = q.where(Profile.id.not_in(reported_ids))
+
+    liked = db.exec(q).all()
     
 
     return templates.TemplateResponse(
@@ -162,8 +171,17 @@ def liked_by_profiles(request: Request, user: AuthDep, db:SessionDep):
     if not mine:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found, cannot find see who liked your profile")
     
-    liked_by=db.exec(select(Profile).join(Like, Like.liker_id==Profile.id).where(Like.liked_id==mine.id)).all()
+    # liked_by=db.exec(select(Profile).join(Like, Like.liker_id==Profile.id).where(Like.liked_id==mine.id)).all()
+    reported_ids = db.exec(
+    select(reportedProfile.profile_id).where(reportedProfile.reported_by == mine.id)
+    ).all()
 
+    q = select(Profile).join(Like, Like.liker_id == Profile.id).where(Like.liked_id == mine.id)
+
+    if reported_ids:
+        q = q.where(Profile.id.not_in(reported_ids))
+
+    liked_by = db.exec(q).all()
     return templates.TemplateResponse(
         request= request,
         name="liked_by.html",
@@ -182,13 +200,18 @@ def see_matches(request: Request, user:AuthDep, db:SessionDep):
     if not mine:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found, cannot find see who liked your profile")
     matches=db.exec(select(Match).where((Match.profile1_id==mine.id)|(Match.profile2_id==mine.id))).all()
-
+    reported_ids = db.exec(
+        select(reportedProfile.profile_id).where(reportedProfile.reported_by == mine.id)
+    ).all()
     matched_profiles=[]
     for m in matches:
         if m.profile1_id==mine.id:
             other_id=m.profile2_id
         else:
             other_id=m.profile1_id
+        #skip reported people
+        if other_id in reported_ids:
+            continue
         otherprof=db.exec(select(Profile).where(Profile.id==other_id)).one_or_none()
         if otherprof:
             matched_profiles.append({
@@ -241,7 +264,7 @@ def unlike_profile(request: Request, user: AuthDep, db: SessionDep, profileId: i
 
 #Route for user to make a report against another profile
 @router.get("/report/{profile_id}", response_class=HTMLResponse)
-async def report_from_view (request: Request, user: AuthDep, db:SessionDep, profile_id: int):
+async def report_from_view (request: Request, user: AuthDep, db:SessionDep, profile_id: int, next:str="/app"):
     profiletoreport = db.exec(select(Profile).where(Profile.id==profile_id)).one_or_none()
     if not profiletoreport:
         raise HTTPException(
@@ -258,7 +281,7 @@ async def report_from_view (request: Request, user: AuthDep, db:SessionDep, prof
     #prevent a currentprofile from reporting themselves
     if currentprofile.id == profiletoreport.id:
         flash(request, "You cannot report your own profile")
-        return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse(url=next, status_code=status.HTTP_303_SEE_OTHER)
         # raise HTTPException(
         #     detail="You cannot report your own profile",
         #     status_code = 400
@@ -268,12 +291,13 @@ async def report_from_view (request: Request, user: AuthDep, db:SessionDep, prof
         name="report.html",
         context={
             "user":user,
-            "profiletoreport":profiletoreport
+            "profiletoreport":profiletoreport,
+            "next":next
         }
     )
 
 @router.post("/report/{profile_id}")
-async def submit_report(request: Request, user: AuthDep, db: SessionDep, profile_id: int, reason: Annotated[str, Form()]):
+async def submit_report(request: Request, user: AuthDep, db: SessionDep, profile_id: int, reason: Annotated[str, Form()], next: Annotated[str, Form()] = "/app"):
     
     profiletoreport = db.get(Profile, profile_id)
     if not profiletoreport:
@@ -290,12 +314,12 @@ async def submit_report(request: Request, user: AuthDep, db: SessionDep, profile
     #prevent a currentprofile from reporting themselves
     if currentprofile.id == profiletoreport.id:
         flash(request, "You cannot report your own profile")
-        return RedirectResponse(url="/app", status_code = status.HTTP_303_SEE_OTHER)
+        return RedirectResponse(url=next, status_code = status.HTTP_303_SEE_OTHER)
     
     existingreport = db.exec(select(reportedProfile).where(reportedProfile.profile_id==profiletoreport.id, reportedProfile.reported_by==currentprofile.id)).first()
     if existingreport:
         flash(request, "You have already reported this profile")
-        return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+        return RedirectResponse(url=next, status_code=status.HTTP_303_SEE_OTHER)
     
                     
     newreport = reportedProfile(
@@ -305,7 +329,7 @@ async def submit_report(request: Request, user: AuthDep, db: SessionDep, profile
     )
     db.add(newreport)
     db.commit()
-    return RedirectResponse(url="/app", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url=next, status_code=status.HTTP_303_SEE_OTHER)
 
 
 
@@ -395,6 +419,10 @@ def daily_picks(request: Request, user: AuthDep, db:SessionDep):
 
     disliked_ids=db.exec(select(DisLike.disliked_id).where(DisLike.disliker_id==mine.id)).all()
 
+    #to filter out reported profiles from daily picks
+    reported_ids = db.exec(
+        select(reportedProfile.profile_id).where(reportedProfile.reported_by == mine.id)
+    ).all()
     ##get the daily picked candidates' profiles
     suggestedprofiles=[]
     for pick in existing:
@@ -402,6 +430,8 @@ def daily_picks(request: Request, user: AuthDep, db:SessionDep):
         if pick.suggested_profile_id in liked_ids:
             continue
         if pick.suggested_profile_id in disliked_ids:
+            continue
+        if pick.suggested_profile_id in reported_ids:
             continue
 
 
