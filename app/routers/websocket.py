@@ -70,29 +70,74 @@ async def websocket_chat(websocket: WebSocket, match_id: int, profile_id: int, d
         )
 
         while True:
-            data = await websocket.receive_text()
-            clean_message = data.strip()
-            if not clean_message:
-                continue
+            raw_data = await websocket.receive_text()
 
-            # Save to DB
-            msg = Message(
-                match_id=match_id,
-                sender_profile_id=profile_id,
-                content=clean_message
-            )
-            db.add(msg)
-            db.commit()
+            try:
+                data = json.loads(raw_data)
+            except json.JSONDecodeError:
+                data = {"type": "message", "text": raw_data}
 
-            await websocket_service.broadcast_to_match(
-                match_id,
-                json.dumps({
-                    "type": "message",
-                    "sender_id": profile_id,
-                    "sender": profile.username,
-                    "text": clean_message
-                })
-            )
+            msg_type = data.get("type")
+
+            if msg_type == "message":
+                clean_message = (data.get("text") or "").strip()
+                if not clean_message:
+                    continue
+
+                msg = Message(match_id=match_id, sender_profile_id=profile_id, content=clean_message)
+                db.add(msg)
+                db.commit()
+
+                await websocket_service.broadcast_to_match(
+                    match_id,
+                    json.dumps({
+                        "type": "message",
+                        "sender_id": profile_id,
+                        "sender": profile.username,
+                        "text": clean_message
+                    })
+                )
+
+            elif msg_type == "start_game":
+                game = websocket_service.start_game(match_id=match_id, player1_id=match.profile1_id, player2_id=match.profile2_id)
+
+                await websocket_service.broadcast_to_match(
+                    match_id,
+                    json.dumps({
+                        "type": "game_started",
+                        "board": game["board"],
+                        "turn": game["turn"],
+                        "players": game["players"],
+                        "winner": game["winner"],
+                        "is_draw": game["is_draw"]
+                    })
+                )
+
+            elif msg_type == "move":
+                index = data.get("index")
+                if index is None:
+                    continue
+
+                result = websocket_service.make_move(match_id=match_id, profile_id=profile_id, index=int(index))
+
+                if "error" in result:
+                    await websocket.send_text(json.dumps({
+                        "type": "game_error",
+                        "text": result["error"]
+                    }))
+                    continue
+
+                await websocket_service.broadcast_to_match(
+                    match_id,
+                    json.dumps({
+                        "type": "game_update",
+                        "board": result["board"],
+                        "turn": result["turn"],
+                        "winner": result["winner"],
+                        "is_draw": result["is_draw"]
+                    })
+                )
+
 
     except WebSocketDisconnect:
         websocket_service.disconnect(match_id, websocket)

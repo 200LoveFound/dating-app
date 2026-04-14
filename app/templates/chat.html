@@ -204,6 +204,35 @@ body{
     color: #4B1528;
 }
 
+.game-panel {
+    background: rgba(255,255,255,0.75);
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid #eee;
+}
+
+.ttt-board {
+    display: grid;
+    grid-template-columns: repeat(3, 70px);
+    gap: 8px;
+    justify-content: start;
+}
+
+.ttt-cell {
+    width: 70px;
+    height: 70px;
+    border: 1px solid #ddd;
+    border-radius: 0.75rem;
+    background: white;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.ttt-cell:hover {
+    background: #f8f9fa;
+}
+
 </style>
 {% endblock %}
 
@@ -238,6 +267,17 @@ body{
                 {% endif %}
             {% endfor %}
         </div>
+        <!-- tic tac toe game -->
+         <div class="game-panel mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">Tic Tac Toe</h6>
+                <button type="button" class="chat-send-btn" onclick="startGame()">Start Game</button>
+            </div>
+
+            <div id="gameStatus" class="text-muted small mb-2">No game started yet.</div>
+
+            <div id="gameBoard" class="ttt-board"></div>
+        </div>
 
         <form class="chat-form" onsubmit="sendMessage(event)">
             <input type="text" id="messageText" class="chat-input" autocomplete="off" placeholder="Type your message here!"/>
@@ -271,13 +311,23 @@ body{
     ws.onmessage = function(event) {
         let data;
         try { data = JSON.parse(event.data); } catch { return; }
+
         if (data.type === "system") {
             appendSystem(data.text);
-        } else if (data.type === "message") {
+        } 
+        else if (data.type === "message") {
             const isMine = data.sender_id === myProfileId;
             appendBubble(data.text, data.sender, isMine);
+        } 
+        else if (data.type === "game_started" || data.type === "game_update") {
+            renderBoard(data.board);
+            updateGameStatus(data);
+        } 
+        else if (data.type === "game_error") {
+            appendSystem("Game error: " + data.text);
         }
     };
+
 
     ws.onclose = function() {
         appendSystem("Disconnected from chat.");
@@ -314,7 +364,10 @@ body{
         const input = document.getElementById("messageText");
         const text = input.value.trim();
         if (!text || ws.readyState !== WebSocket.OPEN) return;
-        ws.send(text);
+        ws.send(JSON.stringify({
+        type: "message",
+        text: text
+    }));
         input.value = "";
     }
 
@@ -364,5 +417,56 @@ body{
             btn.disabled = false;
         }
     }
+
+    function startGame() {
+    ws.send(JSON.stringify({
+        type: "start_game"
+    }));
+}
+
+    function renderBoard(board) {
+        const boardEl = document.getElementById("gameBoard");
+        boardEl.innerHTML = "";
+
+        board.forEach((cell, index) => {
+            const button = document.createElement("button");
+            button.className = "ttt-cell";
+            button.textContent = cell || "";
+            button.onclick = function() {
+                ws.send(JSON.stringify({
+                    type: "move",
+                    index: index
+                }));
+            };
+            boardEl.appendChild(button);
+        });
+    }
+
+    function updateGameStatus(data) {
+        const statusEl = document.getElementById("gameStatus");
+
+        if (data.winner) {
+            statusEl.textContent = `Game over! Winner: ${data.winner}`;
+            return;
+        }
+
+        if (data.is_draw) {
+            statusEl.textContent = "Game over! It's a draw.";
+            return;
+        }
+
+        if (data.turn) {
+            const mySymbol = myProfileId === data.players?.[0] ? "X" : "O";
+            const isMyTurn =
+                (data.turn == myProfileId);
+
+            statusEl.textContent = isMyTurn
+                ? `Your turn (${mySymbol})`
+                : "Other player's turn";
+        } else {
+            statusEl.textContent = "Game in progress";
+        }
+    }
+
 </script>
 {% endblock %}
