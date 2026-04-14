@@ -1,4 +1,5 @@
 username,email,password,role,age,gender,birthday,bio,preferred_gender,picture1,picture2,picture3,is_verified
+bob,bob@mail.come,bobpass,user,27,male,1998-02-14,"Chill guy who likes tech, late-night drives, and good food.",female,/static/img/robpic.jpg,,,TRUE
 abigail10,abigail10@example.com,Password123!,user,22,female,2004-04-09,"Into fitness, music, and trying new things.",female,/static/img/zendayapic.jpg,,,TRUE
 aiden7,aiden7@example.com,Password123!,user,28,male,1998-04-09,Looking for something real and fun.,female,/static/img/robpic.webp,,,TRUE
 amelia7,amelia7@example.com,Password123!,user,25,female,2001-04-09,"Into fitness, music, and trying new things.",any,/static/img/jessicaalba.webp,,,FALSE
@@ -9,3 +10,20 @@ ava3,ava3@example.com,Password123!,user,25,female,2001-04-09,Book lover and week
 benjamin10,benjamin10@example.com,Password123!,user,31,male,1995-04-09,"Big on honesty, laughs, and late-night chats.",male,,,,FALSE
 caleb19,caleb19@example.com,Password123!,user,30,male,1996-04-09,"Big on honesty, laughs, and late-night chats.",male,,,,TRUE
 chloe14,chloe14@example.com,Password123!,user,30,female,1996-04-09,Book lover and weekend hiker.,any,,,,FALSE
+daniel5,daniel5@example.com,Password123!,user,26,male,1999-04-04,"Foodie and music lover. Always up for an adventure.",female,/static/img/male1.jpg,,,TRUE
+ella11,ella11@example.com,Password123!,user,24,female,2002-02-20,"Love movies, coffee, and spontaneous road trips.",male,/static/img/female1.jpg,,,TRUE
+ethan18,ethan18@example.com,Password123!,user,29,male,1997-11-12,"Looking for someone to vibe with and build something real.",female,/static/img/male2.jpg,,,FALSE
+faith9,faith9@example.com,Password123!,user,21,female,2005-06-01,"Soft heart, big dreams, and lots of laughter.",male,/static/img/female2.jpg,,,TRUE
+grace15,grace15@example.com,Password123!,user,27,female,1998-03-08,"Enjoy beach days, sunsets, and meaningful talks.",any,/static/img/female3.jpg,,,TRUE
+henry6,henry6@example.com,Password123!,user,33,male,1992-07-25,"Work hard, laugh harder. Love good company.",female,/static/img/male3.webp,,,TRUE
+isabella22,isabella22@example.com,Password123!,user,23,female,2003-12-18,"Into art, fashion, and chill weekends.",male,/static/img/female4.jpg,,,FALSE
+jackson13,jackson13@example.com,Password123!,user,28,male,1997-09-14,"Big fan of sports, travel, and meeting new people.",female,/static/img/male5.webp,,,TRUE
+kayla4,kayla4@example.com,Password123!,user,26,female,1999-01-06,"I like fun nights out and quiet mornings in.",male,/static/img/female5.jpg,,,TRUE
+liam21,liam21@example.com,Password123!,user,24,male,2002-05-10,"Just a simple guy who loves food, music, and vibes.",female,/static/img/male6.jpg,,,FALSE
+mia17,mia17@example.com,Password123!,user,22,female,2004-11-23,"Always smiling. Always down for a good time.",any,/static/img/female6.jpg,,,TRUE
+noah8,noah8@example.com,Password123!,user,27,male,1998-08-08,"Looking for a real connection and good energy.",female,/static/img/male7.webp,,,TRUE
+olivia20,olivia20@example.com,Password123!,user,29,female,1997-04-19,"I love hiking, animals, and trying new food spots.",male,/static/img/female7.jpg,,,FALSE
+ryan12,ryan12@example.com,Password123!,user,30,male,1996-10-02,"I enjoy deep conversations and making people laugh.",female,/static/img/male8.jpg,,,TRUE
+sophia16,sophia16@example.com,Password123!,user,24,female,2002-07-07,"I like simple things: coffee, sunsets, and good music.",male,/static/img/female8.jpg,,,TRUE
+tyler23,tyler23@example.com,Password123!,user,32,male,1993-02-28,"Hardworking and loyal. Love chill vibes and real people.",female,/static/img/male9.jpeg,,,FALSE
+zoe25,zoe25@example.com,Password123!,user,21,female,2005-09-15,"Fun, friendly, and always down for an adventure.",any,/static/img/female9.jpg,,,TRUE
