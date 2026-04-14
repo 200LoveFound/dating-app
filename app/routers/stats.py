@@ -6,6 +6,7 @@ from app.dependencies.session import SessionDep
 from app.dependencies.auth import AdminDep
 from app.models.models import Profile, Like, Match, reportedProfile
 from . import templates
+from app.services.websocket_service import websocket_service
 
 stats_router = APIRouter()
 
@@ -44,6 +45,9 @@ async def admin_stats_page(request: Request, db:SessionDep, user: AdminDep):
         mostreported = rquery[0]
         mostreportedcount = rquery[1]
     
+    #to get active number of chats
+    active_chats = websocket_service.get_active_chat_count()
+
     return templates.TemplateResponse(
         request=request,
         name="stats.html",
@@ -56,7 +60,8 @@ async def admin_stats_page(request: Request, db:SessionDep, user: AdminDep):
             "hottestaccount":hottestaccount,
             "hottestlikecount":hottestlikecount,
             "mostreported":mostreported,
-            "mostreportedcount":mostreportedcount
+            "mostreportedcount":mostreportedcount,
+            "active_chats": active_chats,
         }
     )
 
