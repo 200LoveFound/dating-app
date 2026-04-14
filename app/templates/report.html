@@ -105,6 +105,7 @@ body{
             <form method="POST" action="/report/{{ profiletoreport.id }}">
                 <div class="mb-3">
                     <label for="reason" class="form-label">Reason for report</label>
+                    <input type="hidden" name="next" value="{{ next }}">
                     <textarea name="reason" class="form-control" id="reason"  rows="5" placeholder="Please provide a short reason for reporting this account" required></textarea>
                 </div>
 
