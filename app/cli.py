@@ -129,5 +129,8 @@ def initialize():
 #         db.refresh(match)
 #         print(f"Match created! id={match.id}")
 
+
+
+
 if __name__=="__main__":
     cli()
