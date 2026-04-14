@@ -1,5 +1,5 @@
 username,email,password,role,age,gender,birthday,bio,preferred_gender,picture1,picture2,picture3,is_verified
-bob,bob@mail.come,bobpass,user,27,male,1998-02-14,"Chill guy who likes tech, late-night drives, and good food.",female,/static/img/robpic.jpg,,,TRUE
+bob,bob@mail.come,bobpass,user,27,male,1998-02-14,"Chill guy who likes tech, late-night drives, and good food.",any,/static/img/bob.jpg,,,TRUE
 abigail10,abigail10@example.com,Password123!,user,22,female,2004-04-09,"Into fitness, music, and trying new things.",female,/static/img/zendayapic.jpg,,,TRUE
 aiden7,aiden7@example.com,Password123!,user,28,male,1998-04-09,Looking for something real and fun.,female,/static/img/robpic.webp,,,TRUE
 amelia7,amelia7@example.com,Password123!,user,25,female,2001-04-09,"Into fitness, music, and trying new things.",any,/static/img/jessicaalba.webp,,,FALSE
@@ -27,3 +27,13 @@ ryan12,ryan12@example.com,Password123!,user,30,male,1996-10-02,"I enjoy deep con
 sophia16,sophia16@example.com,Password123!,user,24,female,2002-07-07,"I like simple things: coffee, sunsets, and good music.",male,/static/img/female8.jpg,,,TRUE
 tyler23,tyler23@example.com,Password123!,user,32,male,1993-02-28,"Hardworking and loyal. Love chill vibes and real people.",female,/static/img/male9.jpeg,,,FALSE
 zoe25,zoe25@example.com,Password123!,user,21,female,2005-09-15,"Fun, friendly, and always down for an adventure.",any,/static/img/female9.jpg,,,TRUE
+jason23,jason23@example.com,Password123!,user,25,male,2001-02-14,"Love hiking, tech, and late-night gaming.",any,/static/img/maleprof3.webp,,,TRUE
+maria88,maria88@example.com,Password123!,user,28,female,1998-07-22,"Foodie who enjoys traveling and photography.",any,/static/img/femaleprof2.jpg,,,TRUE
+kevin_l,kevin_l@example.com,Password123!,user,24,male,2002-11-03,"Gym enthusiast and coffee lover.",any,/static/img/maleprof4.avif,,,TRUE
+sophia_r,sophia_r@example.com,Password123!,user,21,female,2005-01-18,"Bookworm and aspiring writer.",any,/static/img/femaleprof3.webp,,,TRUE
+david99,david99@example.com,Password123!,user,30,male,1996-09-09,"Music producer and night owl.",any,/static/img/maleprof1.webp,,,TRUE
+lina_k,lina_k@example.com,Password123!,user,26,female,2000-05-30,"Yoga, art, and peaceful vibes.",any,/static/img/femaleprof4.jpg,,,TRUE
+ryan77,ryan77@example.com,Password123!,user,27,male,1999-12-12,"Sports fan and weekend adventurer.",any,/static/img/maleprof2.webp,,,TRUE
+nina_b,nina_b@example.com,Password123!,user,23,female,2003-03-27,"Dancing, music, and beach days.",any,/static/img/femaleprof1.jpg,,,TRUE
+alex_dev,alex_dev@example.com,Password123!,user,29,male,1997-06-15,"Coder by day, gamer by night.",any,/static/img/maleprof5.webp,,,TRUE
+chris_m,chris_m@example.com,Password123!,user,31,male,1995-10-05,"Traveler and amateur photographer.",any,/static/img/maleprof6.jpg,,,TRUE
