@@ -101,10 +101,12 @@
 {% block content %}
 <div id="wrapper">
 
+
     <nav id="sidebar" class="p-3 d-flex flex-column vh-100">
         <h4 class="text-black mb-4 text-center py-4" >Love Found &#x1F495</h4>
 
         <ul class="nav nav-pills flex-column gap-2 flex-grow-1">
+             {% block sidebar_links %}
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/app' }}" href="/app">
                     <span > &#x1F609; </span>
@@ -147,6 +149,9 @@
                     Profile Info
                 </a>
             </li>
+
+            
+      {%endblock%}
             
             <li class="nav-item mt-auto">
                 <a class="nav-link d-flex align-items-center text-danger" href="/logout">
@@ -156,6 +161,7 @@
             </li>
         </ul>
     </nav>
+
 
     <div id="content" style="position:relative;">
         <nav class="navbar navbar-expand-lg bg-white mb-4 px-3 rounded-3 shadow-sm">
