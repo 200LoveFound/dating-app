@@ -235,6 +235,13 @@ def unlike_profile(request: Request, user: AuthDep, db: SessionDep, profileId: i
         db.delete(exist)
         db.commit()
 
+    dislike = db.exec(
+        select(DisLike).where((DisLike.disliker_id==mine.id) & (DisLike.disliked_id==profileId))
+    ).one_or_none()
+    if dislike:
+        db.delete(dislike)
+        db.commit()
+
     return RedirectResponse(url="/liked", status_code=status.HTTP_303_SEE_OTHER)
 
 
