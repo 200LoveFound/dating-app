@@ -180,6 +180,10 @@
     gap: 12px;
 }
 
+.desktop-register {
+    display: block;
+}
+
 .mobile-register {
     display: flex;
     width: 100%;
@@ -191,32 +195,29 @@
     background: linear-gradient(135deg, #1a0a0f, #3d1a2e, #6e2d4a);
 }
 
+.desktop-register { display: block; }
+.mobile-register { display: none; }
 
-
-@media (max-width: 760px) {
+/* phone */
+@media (max-width: 767px) {
     .desktop-register { display: none; }
     .mobile-register { display: flex; }
 }
 
-
+/* tablet */
 @media (min-width: 768px) and (max-width: 1024px) {
     .desktop-register { display: none; }
     .mobile-register { display: flex; }
-    .register-card { 
-        max-width: 100%;
-        width: 725px;
-    }
+    .register-card { max-width: 100%; width: 725px; }
 }
 
 
-@media (min-width: 1025px) and (max-width: 1366px) {
-    .desktop-register { display: none; }
-    .mobile-register { display: flex; }
-    .register-card {
-        max-width: 100%;
-        width: 60%;
-    }
+/* desktop - show the two column layout */
+@media (min-width: 1367px) {
+    .desktop-register { display: block; }
+    .mobile-register { display: none; }
 }
+
 
 </style>
 {% endblock %}
