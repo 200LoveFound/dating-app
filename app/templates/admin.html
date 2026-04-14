@@ -11,23 +11,10 @@ body{
 }
 
 #sidebar {
-    background: transparent;
-    backdrop-filter: blur(10px);
-    color: #000;
+    display: none !important;
     
 }
 
-#sidebar .nav-link {
-    background: rgba(255, 255, 255, 0.4);
-    color: #72243E;
-    border-radius: 0.5rem;
-    border: none;
-}
-
-#sidebar .nav-link:hover {
-    background: rgba(255, 255, 255, 0.7);
-    color: #4B1528;
-}
 
 .profile-card {
     max-width: 320px;
@@ -89,6 +76,11 @@ body{
     color: #0F6E56;
     border: 0.5px solid #5DCAA5;
 }
+
+#menu-toggle {
+    display: none !important;
+}
+
 </style>
 {% endblock %}
 
