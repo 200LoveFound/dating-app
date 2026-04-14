@@ -11,8 +11,11 @@ import os
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from app.database import create_db_and_tables
-    from app.models.models import Like, Match, DisLike, Profile, reportedProfile, adminProfile
+    from app.models.models import Like, Match, DisLike, Profile, reportedProfile, adminProfile, Message, DailyPick
+    from app.models.user import User
+    from app.seed import seed_database
     create_db_and_tables()
+    seed_database()
     yield
 
 

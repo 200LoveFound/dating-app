@@ -1,34 +1,29 @@
-import typer
-import csv
-from pathlib import Path
-from datetime import datetime
 from sqlmodel import *
 from app.database import create_db_and_tables, get_cli_session, drop_all
 from app.models.user import *
 from app.models.models import *
-from app.utilities.security import encrypt_password, verify_password, create_access_token
+from app.utilities.security import encrypt_password
+import csv
 
-#populating the db with some profiles
-
-cli = typer.Typer()
-
-@cli.command()
-def initialize():
+def seed_database():
     with get_cli_session() as db:
-        drop_all()
-        create_db_and_tables()
 
-        #Creating a default admin
-        try:
-            admin=User(
+        existing_admin = db.exec(
+            select(User).where(User.username == "admin")
+        ).first()
+
+        if not existing_admin:
+            admin = User(
                 username="admin",
                 email="admin@mail.com",
-                password= encrypt_password("adminpass"),
+                password=encrypt_password("adminpass"),
                 role="admin"
             )
+
             db.add(admin)
             db.commit()
             db.refresh(admin)
+
             admin_profile = adminProfile(
                 user_id=admin.id,
                 username=admin.username,
@@ -42,13 +37,16 @@ def initialize():
                 picture3=None,
                 is_verified=True
             )
+
             db.add(admin_profile)
             db.commit()
-            print("Default admin added successfully!")
-        except Exception as e:
-            db.rollback()
-            print(f"Error adding admin: {e}")
-        
+
+            print("Admin seeded")
+
+        import_csv_profiles(db)
+
+def import_csv_profiles(db):
+     
         try:
             with open ("sample_profiles.csv", newline="", encoding ="utf-8") as f:
                 reader=csv.DictReader(f)
@@ -107,30 +105,6 @@ def initialize():
                         db.rollback()
                         print(f"Skipping row for {row.get('username', 'unknown')} due to error {e}.")
                 print (f"Profile import done: {counter} rows added.\n")
+
         except FileNotFoundError:
             print ("sample_profiles.csv File not found.\n")
-
-
-#Used this to test real - time communication
-# @cli.command()
-# def seed():
-#     with get_cli_session() as db:
-#         # Check what profiles exist first
-#         profiles = db.exec(select(Profile)).all()
-
-#         for p in profiles:
-#             print(f"Profile id={p.id} username={p.username} user_id={p.user_id}")
-
-#         # Create a match between profile id 1 and profile id 2
-#         # Change these IDs to match what gets printed above
-#         match = Match(profile1_id=1, profile2_id=2)
-#         db.add(match)
-#         db.commit()
-#         db.refresh(match)
-#         print(f"Match created! id={match.id}")
-
-
-
-
-if __name__=="__main__":
-    cli()
