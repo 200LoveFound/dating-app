@@ -58,6 +58,7 @@ async def user_home_view(
         newquery = newquery.where(Profile.gender==current_profile.preferred_gender)
     profiles = db.exec(newquery).all() 
 
+
     return templates.TemplateResponse(
         request=request, 
         name="app.html",

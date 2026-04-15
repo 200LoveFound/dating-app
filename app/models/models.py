@@ -23,6 +23,14 @@ class Profile(ProfileBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field( foreign_key="user.id")
     is_blocked: bool = False
+
+    @property
+    def images(self):
+        return [img for img in [
+            self.picture1,
+            self.picture2,
+            self.picture3
+        ] if img]
     
 class adminProfile(ProfileBase, table=True):  
    #inherited role from userBase
