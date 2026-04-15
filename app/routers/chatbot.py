@@ -44,7 +44,7 @@ What should {sender['name']} say or ask {receiver['name']} next?""")
     return response.content
 
 
-@api_router.post("/ai-suggest")  # becomes /api/ai-suggest
+@api_router.post("/ai-suggest")  
 async def ai_suggest(request: AISuggestRequest, user: AuthDep, db: SessionDep):
     mine = db.exec(select(Profile).where(Profile.user_id == user.id)).one_or_none()
     if not mine:
