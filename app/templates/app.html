@@ -196,37 +196,13 @@
 
 
 
-  <!--  <div class="container" id="content">
-        <div class="row">
-            <p>
-                This is table is rendered on the Client. JavaScript code requests the data from <a href="/api/users">/api/users</a> and writes it to this page.
-            </p>
-        </div>
-        <div class="row">
-            <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Id</th><th>Username</th>
-                  </tr>
-                </thead>
-                <tbody id="result">
-                
-                <tbody>
-            </table>
-        </div>
-    </div>
-
--->
-
-
 <body class="{% if current_profile.gender == 'female' %}theme-female{% elif current_profile.gender == 'male' %}theme-male{% endif %}">
 
 
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4 justify-content-center" >
     {% for p in profiles %}
-    <!-- {% if p.picture1 %} -->
-    <!--with a picture-->
 
+    <!-- with a picture -->
     <div class="col">
         <div class="card profile-card" id="card ">
 
